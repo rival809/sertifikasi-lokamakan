@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1002390024397",
+    "project_id": "loka-makan",
+    "storage_bucket": "loka-makan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002390024397:android:030837d6c6d6f7c1217984",
+        "android_client_info": {
+          "package_name": "com.loka.makan.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJRvBHQcxOPUAc2egZq_rd8M2Uc90AOWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,66 @@
+{
+    "dart.flutterSdkPath": null,
+    "dart.analysisExcludedFolders": [
+        ".dart_tool",
+        "build"
+    ],
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    },
+    "editor.defaultFormatter": "Dart-Code.dart-code",
+    "dart.lineLength": 80,
+    "dart.enableSdkFormatter": true,
+    "dart.insertArgumentPlaceholders": false,
+    "dart.previewFlutterUiGuides": true,
+    "dart.previewFlutterUiGuidesCustomTracking": true,
+    "dart.debugSdkLibraries": false,
+    "dart.runPubGetOnPubspecChanges": "prompt",
+    "dart.warnWhenEditingFilesOutsideWorkspace": true,
+    "dart.closingLabels": true,
+    "files.associations": {
+        "*.dart": "dart"
+    },
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/build": true,
+        "**/.dart_tool": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/.dart_tool": true,
+        "**/build": true
+    },
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [100],
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off",
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.selectionHighlight": false,
+        "editor.suggest.snippetsPreventQuickSuggestions": false,
+        "editor.suggestSelection": "first",
+        "editor.tabCompletion": "onlySnippets",
+        "editor.wordBasedSuggestions": "off"
+    },
+    "emmet.includeLanguages": {
+        "dart": "html"
+    },
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "workbench.colorCustomizations": {
+       "activityBar.background": "#d5740b",
+       "activityBar.foreground": "#ffffff",
+       "titleBar.activeBackground": "#d5740b",
+       "titleBar.activeForeground": "#ffffff"
+     }
+}
