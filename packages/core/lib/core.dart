@@ -3,13 +3,12 @@ library core;
 //package
 export 'package:camera/camera.dart';
 export 'package:dio/dio.dart';
-export 'package:dropdown_search/dropdown_search.dart';
+export 'package:dropdown_search/dropdown_search.dart' hide PositionCallback;
 export 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:go_router/go_router.dart';
 export 'package:hive/hive.dart';
 export 'package:hive_flutter/hive_flutter.dart';
-export 'package:lottie/lottie.dart';
 export 'package:pluto_grid_plus/pluto_grid_plus.dart';
 export 'package:validatorless/validatorless.dart';
 export 'package:vph_web_date_picker/vph_web_date_picker.dart';
@@ -22,11 +21,15 @@ export 'package:pull_to_refresh_new/pull_to_refresh.dart';
 export 'package:url_launcher/url_launcher.dart';
 export 'package:calendar_date_picker2/calendar_date_picker2.dart';
 export 'package:image_picker/image_picker.dart';
-export 'package:animated_toggle_switch/animated_toggle_switch.dart';
+export 'package:animated_toggle_switch/animated_toggle_switch.dart'
+    hide TapCallback;
 export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 export 'package:firebase_auth/firebase_auth.dart';
 export 'package:google_sign_in/google_sign_in.dart';
 export 'package:cloud_firestore/cloud_firestore.dart';
+export 'package:geolocator/geolocator.dart' hide ServiceStatus;
+export 'package:flutter_map/flutter_map.dart';
+export 'package:latlong2/latlong.dart';
 
 //Model
 export 'models/global_model.dart';
@@ -50,6 +53,7 @@ export 'services/session_service.dart';
 export 'services/favorite_service.dart';
 export 'services/location_service.dart';
 export 'services/restaurant_service.dart';
+export 'services/openroute_service.dart';
 
 //Database
 export 'database/theme_database.dart';
@@ -139,7 +143,6 @@ export 'widgets/base_form/suggestion_form_field.dart';
 export 'widgets/header_stepper/header_stepper.dart';
 export 'widgets/restaurant_image/restaurant_image_widget.dart';
 export 'widgets/restaurant_card/base_restaurant_card.dart';
-export 'widgets/restaurant_card/restaurant_card_examples.dart';
 export 'widgets/drawer/base_app_drawer.dart';
 export 'widgets/drawer/drawer_menu_model.dart';
 export 'state_util.dart';

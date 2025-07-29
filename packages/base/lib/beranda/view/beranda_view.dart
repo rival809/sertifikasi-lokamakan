@@ -1,5 +1,6 @@
 import 'package:base/beranda/controller/beranda_controller.dart';
 import 'package:base/favorites/view/favorites_view.dart';
+import 'package:base/restaurant_detail/view/restaurant_detail_view.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
@@ -154,7 +155,8 @@ class BerandaView extends StatefulWidget {
                               },
                               showDistance: true,
                               onTap: () {
-                                // TODO: Navigate to restaurant detail
+                                Get.to(RestaurantDetailView(
+                                    restaurant: restaurant));
                               },
                             ),
                             const SizedBox(height: 12),

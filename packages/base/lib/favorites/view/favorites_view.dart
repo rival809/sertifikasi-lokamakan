@@ -1,5 +1,6 @@
 import 'package:base/base.dart';
 import 'package:base/favorites/controller/favorites_controller.dart';
+import 'package:base/restaurant_detail/view/restaurant_detail_view.dart';
 import 'package:core/core.dart' hide RefreshIndicator;
 import 'package:flutter/material.dart';
 
@@ -114,10 +115,10 @@ class FavoritesView extends StatefulWidget {
             children: [
               Text(
                 'Total: ${controller.favorites.length} restoran',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 16),
@@ -150,7 +151,7 @@ class FavoritesView extends StatefulWidget {
               },
               addedAt: favorite.addedAt, // Tampilkan waktu ditambahkan
               onTap: () {
-                // TODO: Navigate to restaurant detail
+                Get.to(RestaurantDetailView(restaurant: restaurantLocation));
               },
             ),
             const SizedBox(height: 12),

@@ -27,6 +27,19 @@ class FavoriteService {
     return await FavoriteDatabase.isFavorite(restaurantId);
   }
 
+  /// Add a restaurant to favorites
+  static Future<bool> addToFavorites(RestaurantLocation restaurant) async {
+    return await FavoriteDatabase.addToFavorites(
+      restaurantId: restaurant.id,
+      restaurantName: restaurant.name,
+      description: restaurant.description,
+      city: restaurant.city,
+      address: restaurant.address,
+      pictureId: restaurant.pictureUrl,
+      rating: restaurant.rating,
+    );
+  }
+
   /// Get all favorite restaurants for the current user
   static Future<List<FavoriteRestaurant>> getAllFavorites() async {
     return await FavoriteDatabase.getAllFavorites();
