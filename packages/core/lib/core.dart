@@ -33,6 +33,7 @@ export 'models/global_model.dart';
 export 'models/user_model.dart';
 export 'models/theme_adapter.dart';
 export 'models/image_model.dart';
+export 'models/restaurant_location_model.dart';
 
 //dummy
 export 'dummy/dummy.dart';
@@ -47,6 +48,8 @@ export 'services/auth_service.dart';
 export 'services/firestore_service.dart';
 export 'services/session_service.dart';
 export 'services/favorite_service.dart';
+export 'services/location_service.dart';
+export 'services/restaurant_service.dart';
 
 //Database
 export 'database/theme_database.dart';
@@ -134,4 +137,9 @@ export 'widgets/base_dialog/show_base_dialog_selesai.dart';
 export 'widgets/base_dialog/show_dialog_confirm.dart';
 export 'widgets/base_form/suggestion_form_field.dart';
 export 'widgets/header_stepper/header_stepper.dart';
+export 'widgets/restaurant_image/restaurant_image_widget.dart';
+export 'widgets/restaurant_card/base_restaurant_card.dart';
+export 'widgets/restaurant_card/restaurant_card_examples.dart';
+export 'widgets/drawer/base_app_drawer.dart';
+export 'widgets/drawer/drawer_menu_model.dart';
 export 'state_util.dart';

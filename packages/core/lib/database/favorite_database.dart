@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:core/database/favorite_restaurant_model.dart';
 import 'package:core/services/session_service.dart';
@@ -65,7 +66,7 @@ class FavoriteDatabase {
       await _box!.put(key, favorite);
       return true;
     } catch (e) {
-      print('Error adding to favorites: $e');
+      dev.log('Error adding to favorites: $e');
       return false;
     }
   }
@@ -86,7 +87,7 @@ class FavoriteDatabase {
       await _box!.delete(key);
       return true;
     } catch (e) {
-      print('Error removing from favorites: $e');
+      dev.log('Error removing from favorites: $e');
       return false;
     }
   }
@@ -106,7 +107,7 @@ class FavoriteDatabase {
       final key = '${restaurantId}_$userId';
       return _box!.containsKey(key);
     } catch (e) {
-      print('Error checking favorite status: $e');
+      dev.log('Error checking favorite status: $e');
       return false;
     }
   }
@@ -133,7 +134,7 @@ class FavoriteDatabase {
 
       return userFavorites;
     } catch (e) {
-      print('Error getting favorites: $e');
+      dev.log('Error getting favorites: $e');
       return [];
     }
   }
@@ -168,7 +169,7 @@ class FavoriteDatabase {
       await _box!.deleteAll(keysToDelete);
       return true;
     } catch (e) {
-      print('Error clearing favorites: $e');
+      dev.log('Error clearing favorites: $e');
       return false;
     }
   }

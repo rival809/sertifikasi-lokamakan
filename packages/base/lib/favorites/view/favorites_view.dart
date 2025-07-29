@@ -1,3 +1,4 @@
+import 'package:base/base.dart';
 import 'package:base/favorites/controller/favorites_controller.dart';
 import 'package:core/core.dart' hide RefreshIndicator;
 import 'package:flutter/material.dart';
@@ -8,18 +9,28 @@ class FavoritesView extends StatefulWidget {
   Widget build(BuildContext context, FavoritesController controller) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
+      drawer: BaseAppDrawer.beranda(
+        onRestaurantListTap: () {
+          Get.to(const BerandaView());
+        },
+        onFavoriteTap: () {},
+      ),
       appBar: AppBar(
-        title: const Text(
+        iconTheme: IconThemeData(
+          color: Theme.of(context)
+              .colorScheme
+              .onSurface, // Ganti dengan warna yang kamu inginkan
+        ),
+        title: Text(
           'Restoran Favorit',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 20,
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           if (controller.favorites.isNotEmpty)
             IconButton(
@@ -75,7 +86,7 @@ class FavoritesView extends StatefulWidget {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              Navigator.of(context).pop(); // Go back to home
+              newRouter.push(RouterUtils.beranda);
             },
             icon: const Icon(Icons.explore),
             label: const Text('Jelajahi Restoran'),
@@ -116,198 +127,37 @@ class FavoritesView extends StatefulWidget {
 
         // Favorite restaurant card
         final favorite = controller.favorites[index - 1];
+
+        // Convert FavoriteRestaurant to RestaurantLocation for consistent card display
+        final restaurantLocation = RestaurantLocation(
+          id: favorite.id,
+          name: favorite.name,
+          location: const GeoPoint(0, 0), // Default location for favorites
+          address: favorite.address ?? '',
+          city: favorite.city ?? 'Unknown City',
+          rating: favorite.rating,
+          pictureUrl: favorite.pictureId, // Firebase sudah return URL lengkap
+          description: favorite.description,
+        );
+
         return Column(
           children: [
-            _buildFavoriteCard(
-              context: context,
-              favorite: favorite,
-              controller: controller,
+            BaseRestaurantCard.withFavorite(
+              restaurant: restaurantLocation,
+              isFavorite: true, // Always true in favorites list
+              onFavoriteToggle: () async {
+                await controller.removeFromFavorites(favorite);
+              },
+              addedAt: favorite.addedAt, // Tampilkan waktu ditambahkan
+              onTap: () {
+                // TODO: Navigate to restaurant detail
+              },
             ),
             const SizedBox(height: 12),
           ],
         );
       },
     );
-  }
-
-  Widget _buildFavoriteCard({
-    required BuildContext context,
-    required FavoriteRestaurant favorite,
-    required FavoritesController controller,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline,
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.surface.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            // Restaurant Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  image: favorite.pictureId != null
-                      ? DecorationImage(
-                          image: NetworkImage(
-                            'https://restaurant-api.dicoding.dev/images/medium/${favorite.pictureId}',
-                          ),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                child: favorite.pictureId == null
-                    ? const Icon(
-                        Icons.restaurant,
-                        color: Colors.grey,
-                        size: 30,
-                      )
-                    : null,
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // Restaurant Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    favorite.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 14,
-                        color: Colors.grey[600],
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          favorite.city ?? 'Unknown City',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (favorite.rating != null) ...[
-                        const SizedBox(width: 12),
-                        const Icon(
-                          Icons.star,
-                          size: 14,
-                          color: Colors.amber,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          favorite.rating!.toStringAsFixed(1),
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Ditambahkan: ${_formatDate(favorite.addedAt)}',
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 11,
-                    ),
-                  ),
-                  if (favorite.description != null &&
-                      favorite.description!.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      favorite.description!,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-            // Remove from Favorites Button
-            Column(
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    await controller.removeFromFavorites(favorite);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 2,
-                          offset: const Offset(0, 1),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.favorite,
-                      color: Colors.red,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays} hari yang lalu';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} jam yang lalu';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} menit yang lalu';
-    } else {
-      return 'Baru saja';
-    }
   }
 
   @override
