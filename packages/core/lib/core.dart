@@ -23,10 +23,15 @@ export 'package:url_launcher/url_launcher.dart';
 export 'package:calendar_date_picker2/calendar_date_picker2.dart';
 export 'package:image_picker/image_picker.dart';
 export 'package:animated_toggle_switch/animated_toggle_switch.dart';
+export 'package:font_awesome_flutter/font_awesome_flutter.dart';
+export 'package:firebase_auth/firebase_auth.dart';
+export 'package:google_sign_in/google_sign_in.dart';
+export 'package:cloud_firestore/cloud_firestore.dart';
 
 //Model
 export 'models/global_model.dart';
 export 'models/user_data_model.dart';
+export 'models/user_model.dart';
 export 'models/theme_adapter.dart';
 export 'models/image_model.dart';
 export 'models/versioning_model.dart';
@@ -41,9 +46,11 @@ export 'utils/enum/enum_update.dart';
 //Service
 export 'service/api_service_core.dart';
 export 'service/logger_service.dart';
+export 'services/auth_service.dart';
+export 'services/firestore_service.dart';
+export 'services/session_service.dart';
 
 //Database
-export 'database/session_database.dart';
 export 'database/user_data_database.dart';
 export 'database/theme_database.dart';
 export 'database/version_database.dart';

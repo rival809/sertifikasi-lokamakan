@@ -28,7 +28,7 @@ class DioClient {
     CancelToken? cancelToken,
   }) async {
     late Response result;
-    String token = SessionDatabase.token;
+    String token = SessionService.token;
 
     switch (requestType) {
       case RequestType.get:

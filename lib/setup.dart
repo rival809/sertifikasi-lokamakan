@@ -13,6 +13,12 @@ class Setup {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
+
+      // Initialize AuthService for development settings
+      await AuthService.initialize();
+
+      // Initialize SessionService for Firebase-based session management
+      await SessionService.initialize();
     }
 
     newRouter = router;
@@ -48,7 +54,6 @@ class Setup {
 
       mainStorage = await Hive.openBox("lokamakan");
 
-      await SessionDatabase.load();
       await ThemeDatabase.load();
       await UserDataDatabase.load();
     } catch (e) {

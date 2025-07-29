@@ -15,4 +15,10 @@ final List<GoRoute> baseRoutes = [
       return const BerandaView();
     },
   ),
+  GoRoute(
+    path: RouterUtils.login,
+    builder: (BuildContext context, GoRouterState state) {
+      return const LoginView();
+    },
+  ),
 ];

@@ -4,7 +4,7 @@ import 'package:core/core.dart';
 
 Future<void> globalLogout() async {
   try {
-    SessionDatabase.save("");
+    await SessionService.logout();
     await UserDataDatabase.clear();
     newRouter.go(RouterUtils.root);
   } catch (e) {

@@ -1,7 +1,7 @@
 import 'package:core/themes/theme_config.dart';
 import 'package:flutter/material.dart';
 
-ThemeData themeDataLight = ThemeData().copyWith(
+ThemeData themeDataLight = ThemeData(useMaterial3: true).copyWith(
   // Primary Colors
   primaryColor: primaryEmerald,
 
@@ -269,7 +269,7 @@ ThemeData themeDataLight = ThemeData().copyWith(
   textTheme: myTextThemeLight,
 );
 
-ThemeData themeDataDark = ThemeData.dark().copyWith(
+ThemeData themeDataDark = ThemeData.dark(useMaterial3: true).copyWith(
   // Primary Colors
   primaryColor: primaryEmerald,
 

@@ -6,6 +6,7 @@ final GoRouter router = GoRouter(
   navigatorKey: Get.navigatorKey,
   initialLocation: RouterUtils.root,
   errorBuilder: RouteConfigs.errorBuilder,
+  redirect: RouteConfigs.redirect,
   routes: <RouteBase>[
     ...baseRoutes,
   ],

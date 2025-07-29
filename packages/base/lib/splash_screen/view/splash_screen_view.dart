@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import '../controller/splash_screen_controller.dart';
 
@@ -9,8 +10,13 @@ class SplashScreenView extends StatefulWidget {
 
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(
-          color: Theme.of(context).colorScheme.primary,
+        child: SizedBox(
+          width: 200,
+          height: 200,
+          child: Image.asset(
+            MediaRes.images.logo.logo,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

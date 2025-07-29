@@ -28,6 +28,9 @@ dependencies:
   permission_handler: ^11.3.1
   device_info_plus: ^10.1.2
   dropdown_button2: ^2.3.9
+  firebase_auth: ^4.19.5
+  cloud_firestore: ^4.17.3
+  google_sign_in: ^6.2.1
   package_info_plus: ^8.0.2
   responsive_builder: ^0.7.0
   pull_to_refresh_new: ^2.0.5
@@ -36,6 +39,7 @@ dependencies:
   flutter_image_compress: ^2.3.0
   calendar_date_picker2: ^1.1.8
   geolocator: ^12.0.0
+  font_awesome_flutter: ^10.7.0
   # geocoding: ^4.0.0
 
 publish_to: none

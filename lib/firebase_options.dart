@@ -53,10 +53,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBB8fdMuBJvviUpInS5_52W75dhkW1nx5o',
-    appId: '1:694766120322:android:ece175d63f00044650739b',
-    messagingSenderId: '694766120322',
-    projectId: 'new-sakti-mobile',
-    storageBucket: 'new-sakti-mobile.firebasestorage.app',
+    apiKey: 'AIzaSyBJRvBHQcxOPUAc2egZq_rd8M2Uc90AOWA',
+    appId: '1:1002390024397:android:030837d6c6d6f7c1217984',
+    messagingSenderId: '1002390024397',
+    projectId: 'loka-makan',
+    storageBucket: 'loka-makan.firebasestorage.app',
   );
 }
