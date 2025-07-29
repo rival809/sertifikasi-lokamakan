@@ -1,6 +1,7 @@
 import 'package:base/beranda/view/beranda_view.dart';
 import 'package:base/models/detail_restaurant_model.dart';
 import 'package:base/service/api_service_base.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 class BerandaController extends State<BerandaView> {
@@ -15,6 +16,9 @@ class BerandaController extends State<BerandaView> {
   bool isLoading = false;
   String errorMessage = '';
   TextEditingController searchController = TextEditingController();
+
+  // Keep track of favorite states
+  Map<String, bool> favoriteStates = {};
 
   @override
   void initState() {
@@ -51,6 +55,9 @@ class BerandaController extends State<BerandaView> {
         filteredRestaurants = restaurants;
         isLoading = false;
       });
+
+      // Load favorite states for all restaurants
+      await _loadFavoriteStates();
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
@@ -67,6 +74,72 @@ class BerandaController extends State<BerandaView> {
         );
       }
     }
+  }
+
+  // Load favorite states for all restaurants
+  Future<void> _loadFavoriteStates() async {
+    for (final restaurant in restaurants) {
+      if (restaurant.id != null) {
+        final isFav = await FavoriteService.isFavorite(restaurant.id!);
+        favoriteStates[restaurant.id!] = isFav;
+      }
+    }
+    if (mounted) setState(() {});
+  }
+
+  // Toggle favorite status
+  Future<void> toggleFavorite(Restaurant restaurant) async {
+    if (restaurant.id == null || restaurant.name == null) {
+      return;
+    }
+
+    try {
+      final success = await FavoriteService.toggleFavorite(
+        restaurantId: restaurant.id!,
+        restaurantName: restaurant.name!,
+        description: restaurant.description,
+        city: restaurant.city,
+        address: restaurant.address,
+        pictureId: restaurant.pictureId,
+        rating: restaurant.rating,
+      );
+
+      if (success) {
+        final newState = !(favoriteStates[restaurant.id!] ?? false);
+        setState(() {
+          favoriteStates[restaurant.id!] = newState;
+        });
+
+        // Show feedback to user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                newState
+                    ? '${restaurant.name} ditambahkan ke favorit'
+                    : '${restaurant.name} dihapus dari favorit',
+              ),
+              duration: const Duration(seconds: 2),
+              backgroundColor: newState ? Colors.green : Colors.orange,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  // Check if restaurant is favorite
+  bool isFavorite(String restaurantId) {
+    return favoriteStates[restaurantId] ?? false;
   }
 
   // Search restaurants locally only

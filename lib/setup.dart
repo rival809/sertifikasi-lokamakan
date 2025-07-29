@@ -42,17 +42,12 @@ class Setup {
       if (!Hive.isAdapterRegistered(1)) {
         //Theme Model
         Hive.registerAdapter(ThemeModeAdapter());
-
-        //User Data Model
-        Hive.registerAdapter(UserDataModelAdapter());
-        Hive.registerAdapter(DataUserAdapter());
-
-        // Versioning Model
-        Hive.registerAdapter(VersioningModelAdapter());
-        Hive.registerAdapter(DataVersioningAdapter());
       }
 
       mainStorage = await Hive.openBox("lokamakan");
+
+      // Initialize Favorite Database
+      await FavoriteDatabase.init();
 
       await ThemeDatabase.load();
     } catch (e) {

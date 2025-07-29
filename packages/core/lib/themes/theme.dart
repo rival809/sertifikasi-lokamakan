@@ -4,6 +4,15 @@ import 'package:flutter/material.dart';
 ThemeData themeDataLight = ThemeData(useMaterial3: true).copyWith(
   // Primary Colors
   primaryColor: primaryEmerald,
+  navigationDrawerTheme: const NavigationDrawerThemeData(
+    backgroundColor: surfaceLight,
+    elevation: 16,
+  ),
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: primaryEmerald,
+    selectionHandleColor: primaryEmerald,
+    selectionColor: primaryEmerald.withOpacity(0.24),
+  ),
 
   // Background Colors
   scaffoldBackgroundColor: backgroundLight,
@@ -272,10 +281,19 @@ ThemeData themeDataLight = ThemeData(useMaterial3: true).copyWith(
 ThemeData themeDataDark = ThemeData.dark(useMaterial3: true).copyWith(
   // Primary Colors
   primaryColor: primaryEmerald,
+  navigationDrawerTheme: const NavigationDrawerThemeData(
+    backgroundColor: surfaceDark,
+    elevation: 16,
+  ),
 
   // Background Colors
   scaffoldBackgroundColor: backgroundDark,
   canvasColor: surfaceDark,
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: primaryEmerald,
+    selectionHandleColor: primaryEmerald,
+    selectionColor: primaryEmerald.withOpacity(0.24),
+  ),
 
   // Surface Colors
   // backgroundColor: deprecated, now uses colorScheme.background

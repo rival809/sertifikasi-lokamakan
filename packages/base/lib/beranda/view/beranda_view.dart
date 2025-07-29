@@ -1,4 +1,5 @@
 import 'package:base/beranda/controller/beranda_controller.dart';
+import 'package:base/favorites/view/favorites_view.dart';
 import 'package:base/models/detail_restaurant_model.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +16,9 @@ class BerandaView extends StatefulWidget {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
-                title: const Text(
+                title: Text(
                   'Restoran',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
+                  style: Theme.of(context).textTheme.displayMedium,
                 ),
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 elevation: 0,
@@ -230,6 +227,29 @@ class BerandaView extends StatefulWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () async {
+                          final controller = BerandaController.instance;
+                          await controller.toggleFavorite(restaurant);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(
+                            restaurant.id != null &&
+                                    BerandaController.instance
+                                        .isFavorite(restaurant.id!)
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: restaurant.id != null &&
+                                    BerandaController.instance
+                                        .isFavorite(restaurant.id!)
+                                ? Theme.of(context).colorScheme.error
+                                : Theme.of(context).colorScheme.onSurface,
+                            size: 20,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -310,7 +330,12 @@ class BerandaView extends StatefulWidget {
             title: const Text('Favorit'),
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to favorites
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesView(),
+                ),
+              );
             },
           ),
           ListTile(

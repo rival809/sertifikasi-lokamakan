@@ -30,11 +30,9 @@ export 'package:cloud_firestore/cloud_firestore.dart';
 
 //Model
 export 'models/global_model.dart';
-export 'models/user_data_model.dart';
 export 'models/user_model.dart';
 export 'models/theme_adapter.dart';
 export 'models/image_model.dart';
-export 'models/versioning_model.dart';
 
 //dummy
 export 'dummy/dummy.dart';
@@ -48,11 +46,14 @@ export 'service/logger_service.dart';
 export 'services/auth_service.dart';
 export 'services/firestore_service.dart';
 export 'services/session_service.dart';
+export 'services/favorite_service.dart';
 
 //Database
 export 'database/theme_database.dart';
 export 'database/version_database.dart';
 export 'database/ip_database.dart';
+export 'database/favorite_restaurant_model.dart';
+export 'database/favorite_database.dart';
 
 //file
 export 'client/dio_client.dart';
