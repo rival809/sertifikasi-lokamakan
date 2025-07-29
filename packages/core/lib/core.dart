@@ -44,14 +44,12 @@ export 'enum/dialog_type.dart';
 export 'utils/enum/enum_update.dart';
 
 //Service
-export 'service/api_service_core.dart';
 export 'service/logger_service.dart';
 export 'services/auth_service.dart';
 export 'services/firestore_service.dart';
 export 'services/session_service.dart';
 
 //Database
-export 'database/user_data_database.dart';
 export 'database/theme_database.dart';
 export 'database/version_database.dart';
 export 'database/ip_database.dart';

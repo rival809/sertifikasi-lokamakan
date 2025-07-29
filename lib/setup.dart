@@ -55,7 +55,6 @@ class Setup {
       mainStorage = await Hive.openBox("lokamakan");
 
       await ThemeDatabase.load();
-      await UserDataDatabase.load();
     } catch (e) {
       // Fix masalah dengan database
       await Hive.deleteBoxFromDisk('lokamakan');

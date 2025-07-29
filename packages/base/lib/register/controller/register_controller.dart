@@ -29,12 +29,6 @@ class RegisterController extends State<RegisterView> {
   bool isLoading = false;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  void update() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   // Register dengan email dan password
   Future<void> doRegister() async {
     if (!formKey.currentState!.validate()) return;
@@ -74,6 +68,9 @@ class RegisterController extends State<RegisterView> {
             ),
           );
         }
+
+        // Reload session data untuk memastikan displayName terupdate
+        await SessionService.reloadUserData();
 
         // Navigate to home or dashboard after successful registration
         // You can add navigation logic here
@@ -147,6 +144,9 @@ class RegisterController extends State<RegisterView> {
             ),
           );
         }
+
+        // Reload session data untuk memastikan data user terupdate
+        await SessionService.reloadUserData();
 
         // Navigate to home or dashboard
         // context.go('/home');

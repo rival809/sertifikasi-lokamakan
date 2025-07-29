@@ -62,23 +62,42 @@ class AuthService {
       if (credential.user != null) {
         // Update display name jika disediakan
         if (displayName != null && displayName.isNotEmpty) {
+          log('Setting displayName: $displayName for user: ${credential.user!.email}');
+
           await credential.user!.updateDisplayName(displayName);
           await credential.user!.reload();
-        }
 
-        // Simpan data user ke Firestore
-        try {
-          await FirestoreService.createOrUpdateUser(
-            credential.user!,
-            additionalData: additionalData,
-          );
-        } catch (firestoreError) {
-          log('Warning: Failed to save user data to Firestore: $firestoreError');
-          // Continue dengan auth success meskipun Firestore gagal
+          // Refresh current user reference setelah update
+          final updatedUser = _auth.currentUser;
+          log('Updated user displayName: ${updatedUser?.displayName}');
+
+          if (updatedUser != null) {
+            // Simpan data user ke Firestore dengan displayName yang sudah terupdate
+            try {
+              await FirestoreService.createOrUpdateUser(
+                updatedUser,
+                additionalData: additionalData,
+              );
+            } catch (firestoreError) {
+              log('Warning: Failed to save user data to Firestore: $firestoreError');
+              // Continue dengan auth success meskipun Firestore gagal
+            }
+          }
+        } else {
+          // Jika tidak ada displayName, simpan langsung
+          try {
+            await FirestoreService.createOrUpdateUser(
+              credential.user!,
+              additionalData: additionalData,
+            );
+          } catch (firestoreError) {
+            log('Warning: Failed to save user data to Firestore: $firestoreError');
+            // Continue dengan auth success meskipun Firestore gagal
+          }
         }
       }
 
-      return AuthResult.success(credential.user);
+      return AuthResult.success(_auth.currentUser);
     } on FirebaseAuthException catch (e) {
       // Handle specific reCAPTCHA errors dengan fallback
       if (e.code == 'unknown' &&
