@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class FavoriteEventManager {
   static Function()? _onFavoriteChanged;
 
@@ -15,7 +17,7 @@ class FavoriteEventManager {
         _onFavoriteChanged!();
       }
     } catch (e) {
-      print('Error notifying favorite changed: $e');
+      log('Error notifying favorite changed: $e');
     }
   }
 }

@@ -21,4 +21,10 @@ final List<GoRoute> baseRoutes = [
       return const LoginView();
     },
   ),
+  GoRoute(
+    path: RouterUtils.adminRestaurant,
+    builder: (BuildContext context, GoRouterState state) {
+      return const AdminRestaurantView();
+    },
+  ),
 ];

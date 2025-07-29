@@ -16,6 +16,9 @@ class FavoritesView extends StatefulWidget {
           Get.back();
         },
         onFavoriteTap: () {},
+        onAdminRestaurantTap: () {
+          newRouter.push(RouterUtils.adminRestaurant);
+        },
       ),
       appBar: AppBar(
         iconTheme: IconThemeData(

@@ -23,3 +23,6 @@ export 'login/view/login_view.dart';
 
 //REGISTER
 export 'register/view/register_view.dart';
+
+//ADMIN RESTAURANT
+export 'admin_restaurant/view/admin_restaurant_view.dart';

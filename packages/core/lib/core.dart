@@ -93,6 +93,7 @@ export 'utils/logout/logout.dart';
 export 'utils/json_utils/json_utils.dart';
 export 'utils/base64/base64_converter.dart';
 export 'utils/favorite_event_manager.dart';
+export 'utils/admin_test_helper.dart';
 
 export 'media_res/media_res.dart';
 

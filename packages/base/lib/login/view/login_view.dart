@@ -2,7 +2,6 @@ import 'package:base/login/controller/login_controller.dart';
 import 'package:base/register/view/register_view.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

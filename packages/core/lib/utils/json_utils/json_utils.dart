@@ -24,6 +24,7 @@ class JsonUtils {
     final jsonToEncode =
         printNull ? jsonData : removeNullEntries(jsonData ?? {});
     final prettyJson = encoder.convert(jsonToEncode);
+    // ignore: deprecated_member_use
     logger.v(prettyJson);
   }
 

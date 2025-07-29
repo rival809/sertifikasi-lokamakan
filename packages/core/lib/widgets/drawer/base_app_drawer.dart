@@ -26,24 +26,40 @@ class BaseAppDrawer extends StatelessWidget {
     Color? headerColor,
     required VoidCallback onRestaurantListTap,
     required VoidCallback onFavoriteTap,
+    VoidCallback? onAdminRestaurantTap,
   }) {
+    // Create base menu items
+    List<DrawerMenuModel> menuItems = [
+      DrawerMenuModel(
+        title: 'Daftar Restoran',
+        icon: Icons.restaurant_outlined,
+        onTap: onRestaurantListTap,
+      ),
+      DrawerMenuModel(
+        title: 'Favorit',
+        icon: Icons.favorite_outline,
+        onTap: onFavoriteTap,
+      ),
+    ];
+
+    // Add admin menu only for user ID "1" (with test mode support)
+    final isAdmin = AdminTestHelper.isCurrentUserAdmin;
+    if (isAdmin && onAdminRestaurantTap != null) {
+      menuItems.add(
+        DrawerMenuModel(
+          title: 'Admin Restaurant',
+          icon: Icons.admin_panel_settings,
+          onTap: onAdminRestaurantTap,
+        ),
+      );
+    }
+
     return BaseAppDrawer(
       userName: userName,
       userEmail: userEmail,
       userAvatar: userAvatar,
       headerColor: headerColor,
-      menuItems: [
-        DrawerMenuModel(
-          title: 'Daftar Restoran',
-          icon: Icons.restaurant_outlined,
-          onTap: onRestaurantListTap,
-        ),
-        DrawerMenuModel(
-          title: 'Favorit',
-          icon: Icons.favorite_outline,
-          onTap: onFavoriteTap,
-        ),
-      ],
+      menuItems: menuItems,
     );
   }
 

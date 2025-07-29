@@ -1,6 +1,10 @@
 // Script untuk menambahkan sample data restaurant ke Firebase
 // Jalankan ini dari Flutter console atau buat sebagai function terpisah
 
+// ignore_for_file: depend_on_referenced_packages
+
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseDataSetup {
@@ -133,10 +137,8 @@ class FirebaseDataSetup {
       }
 
       await batch.commit();
-      print(
-          '✅ Successfully added ${sampleRestaurants.length} sample restaurants to Firebase!');
     } catch (e) {
-      print('❌ Error adding sample restaurants: $e');
+      log('❌ Error adding sample restaurants: $e');
     }
   }
 
@@ -151,9 +153,8 @@ class FirebaseDataSetup {
       }
 
       await batch.commit();
-      print('✅ All restaurants cleared from Firebase');
     } catch (e) {
-      print('❌ Error clearing restaurants: $e');
+      log('❌ Error clearing restaurants: $e');
     }
   }
 }

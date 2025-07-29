@@ -1,7 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:base/restaurant_detail/view/restaurant_detail_view.dart';
 import 'package:base/routing/view/routing_view.dart';
 
@@ -241,6 +239,7 @@ https://www.google.com/maps/search/?api=1&query=${restaurant.location.latitude},
     }
   }
 
+  // ignore: unused_element
   String _formatDistance(double? dist) {
     if (dist == null) return '';
     if (dist < 1) {

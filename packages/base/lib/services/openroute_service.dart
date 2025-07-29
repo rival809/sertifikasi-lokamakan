@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
@@ -196,9 +197,6 @@ class OpenRouteService {
         'geometry': true,
       };
 
-      print('Making request to: $url');
-      print('Request body: $body');
-
       final response = await http.post(
         url,
         headers: {
@@ -210,19 +208,15 @@ class OpenRouteService {
         body: json.encode(body),
       );
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return RouteResponse.fromJson(data);
       } else {
-        print('API Error ${response.statusCode}: ${response.body}');
         throw Exception(
             'Failed to get directions: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Exception occurred: $e');
+      log('Exception occurred: $e');
       rethrow;
     }
   }

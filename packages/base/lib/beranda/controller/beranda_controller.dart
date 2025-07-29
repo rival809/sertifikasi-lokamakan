@@ -1,7 +1,6 @@
 import 'package:base/beranda/view/beranda_view.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'dart:developer';
 
 class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
@@ -24,6 +23,9 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
 
   // Keep track of favorite states
   Map<String, bool> favoriteStates = {};
+
+  // Last updated timestamp
+  DateTime? lastUpdated;
 
   // Helper to check if nearest filter is showing no results due to location issues
   bool get isNearestFilterWithNoLocation =>
@@ -243,6 +245,7 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
       setState(() {
         restaurants = fetchedRestaurants;
         isLoading = false;
+        lastUpdated = DateTime.now(); // Update timestamp
       });
 
       // Calculate distances if user location is available
@@ -347,6 +350,24 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   // Refresh data (for pull-to-refresh)
   Future<void> refreshData() async {
     await fetchRestaurants();
+  }
+
+  // Format last updated time for display
+  String formatLastUpdated() {
+    if (lastUpdated == null) return '';
+
+    final now = DateTime.now();
+    final difference = now.difference(lastUpdated!);
+
+    if (difference.inMinutes < 1) {
+      return 'Baru saja';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m yang lalu';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h yang lalu';
+    } else {
+      return '${difference.inDays}d yang lalu';
+    }
   }
 
   // Clear search

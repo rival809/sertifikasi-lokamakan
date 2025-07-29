@@ -1,7 +1,8 @@
 import 'package:base/beranda/controller/beranda_controller.dart';
 import 'package:base/favorites/view/favorites_view.dart';
 import 'package:base/restaurant_detail/view/restaurant_detail_view.dart';
-import 'package:core/core.dart';
+import 'package:core/core.dart' hide RefreshIndicator;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class BerandaView extends StatefulWidget {
@@ -14,6 +15,9 @@ class BerandaView extends StatefulWidget {
         onRestaurantListTap: () {},
         onFavoriteTap: () {
           Get.to(const FavoritesView());
+        },
+        onAdminRestaurantTap: () {
+          newRouter.push(RouterUtils.adminRestaurant);
         },
       ),
       bottomNavigationBar: Container(
@@ -67,6 +71,22 @@ class BerandaView extends StatefulWidget {
                   'Restoran',
                   style: Theme.of(context).textTheme.displayMedium,
                 ),
+                actions: [
+                  // Refresh button
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: controller.refreshData,
+                    tooltip: 'Refresh Data',
+                  ),
+                  // Debug button untuk testing admin features
+                  if (kDebugMode)
+                    IconButton(
+                      icon: const Icon(Icons.bug_report),
+                      onPressed: () {
+                        AdminTestHelper.showAdminTestDialog(context);
+                      },
+                    ),
+                ],
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 elevation: 0,
                 iconTheme: const IconThemeData(color: Colors.black),
@@ -101,69 +121,123 @@ class BerandaView extends StatefulWidget {
               ),
             ];
           },
-          body: controller.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : controller.filteredRestaurants.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'Tidak ada restoran ditemukan',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16.0),
-                      itemCount: controller.filteredRestaurants.length +
-                          1, // +1 for header
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          // Header section
-                          return controller.searchController.text.isNotEmpty
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Hasil Pencarian "${controller.searchController.text}"',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                  ],
-                                )
-                              : const SizedBox.shrink();
-                        }
-
-                        // Restaurant card
-                        final restaurant =
-                            controller.filteredRestaurants[index - 1];
-                        return Column(
-                          children: [
-                            BaseRestaurantCard.withFavorite(
-                              restaurant: restaurant,
-                              isFavorite: controller.isFavorite(restaurant.id),
-                              onFavoriteToggle: () async {
-                                await controller.toggleFavorite(restaurant);
-                              },
-                              showDistance: true,
-                              onTap: () {
-                                Get.to(RestaurantDetailView(
-                                    restaurant: restaurant));
-                              },
+          body: RefreshIndicator(
+            onRefresh: controller.refreshData,
+            child: controller.isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : controller.filteredRestaurants.isEmpty
+                    ? SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: const Center(
+                            child: Text(
+                              'Tidak ada restoran ditemukan',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
                             ),
-                            const SizedBox(height: 12),
-                          ],
-                        );
-                      },
-                    ),
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(16.0),
+                        itemCount: controller.filteredRestaurants.length +
+                            1, // +1 for header
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            // Header section
+                            return controller.searchController.text.isNotEmpty
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              'Hasil Pencarian "${controller.searchController.text}"',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface,
+                                              ),
+                                            ),
+                                          ),
+                                          // Last updated info
+                                          if (controller.lastUpdated != null)
+                                            Text(
+                                              'Update: ${controller.formatLastUpdated()}',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                  )
+                                : Container(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Daftar Restoran (${controller.filteredRestaurants.length})',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                        ),
+                                        // Last updated info
+                                        if (controller.lastUpdated != null)
+                                          Text(
+                                            'Update: ${controller.formatLastUpdated()}',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  );
+                          }
+
+                          // Restaurant card
+                          final restaurant =
+                              controller.filteredRestaurants[index - 1];
+                          return Column(
+                            children: [
+                              BaseRestaurantCard.withFavorite(
+                                restaurant: restaurant,
+                                isFavorite:
+                                    controller.isFavorite(restaurant.id),
+                                onFavoriteToggle: () async {
+                                  await controller.toggleFavorite(restaurant);
+                                },
+                                showDistance: true,
+                                onTap: () {
+                                  Get.to(RestaurantDetailView(
+                                      restaurant: restaurant));
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                          );
+                        },
+                      ),
+          ),
         ),
       ),
     );

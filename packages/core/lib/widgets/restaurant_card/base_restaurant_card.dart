@@ -203,20 +203,20 @@ class BaseRestaurantCard extends StatelessWidget {
         height: imageSize,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceVariant,
-          image: (restaurant.pictureUrl?.isNotEmpty ?? false)
-              ? DecorationImage(
-                  image: NetworkImage(restaurant.pictureUrl!),
-                  fit: BoxFit.cover,
-                )
-              : null,
         ),
-        child: (restaurant.pictureUrl?.isEmpty ?? true)
-            ? Icon(
-                Icons.restaurant,
+        child: Image.network(
+          restaurant.pictureUrl ?? '',
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Center(
+              child: Icon(
+                Icons.image_not_supported,
+                size: imageSize / 2,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
-                size: 30,
-              )
-            : null,
+              ),
+            );
+          },
+        ),
       ),
     );
   }
