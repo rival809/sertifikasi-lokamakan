@@ -40,7 +40,7 @@ class FavoritesController extends State<FavoritesView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error loading favorites: $errorMessage'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -55,6 +55,9 @@ class FavoritesController extends State<FavoritesView> {
         setState(() {
           favorites.removeWhere((f) => f.id == favorite.id);
         });
+
+        // Notify about favorite change
+        FavoriteEventManager.notifyFavoriteChanged();
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -75,6 +78,9 @@ class FavoritesController extends State<FavoritesView> {
                     rating: favorite.rating,
                   );
                   await loadFavorites(); // Refresh list
+
+                  // Notify about favorite change
+                  FavoriteEventManager.notifyFavoriteChanged();
                 },
               ),
             ),
@@ -86,7 +92,7 @@ class FavoritesController extends State<FavoritesView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -128,6 +134,9 @@ class FavoritesController extends State<FavoritesView> {
             favorites.clear();
           });
 
+          // Notify about favorite change
+          FavoriteEventManager.notifyFavoriteChanged();
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -142,7 +151,7 @@ class FavoritesController extends State<FavoritesView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error: ${e.toString()}'),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }

@@ -72,6 +72,9 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
         isFavorite = !isFavorite;
       });
 
+      // Notify about favorite change
+      FavoriteEventManager.notifyFavoriteChanged();
+
       // Show feedback to user
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

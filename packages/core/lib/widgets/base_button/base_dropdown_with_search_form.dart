@@ -83,7 +83,8 @@ class _BaseDropdownWithSearchFormState
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: DropdownButton<String>(
               value: dropdownValue,
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.green),
+              icon: Icon(Icons.arrow_drop_down,
+                  color: Theme.of(context).colorScheme.primary),
               underline: const SizedBox(), // Remove underline
               onChanged: (String? newValue) {
                 setState(() {

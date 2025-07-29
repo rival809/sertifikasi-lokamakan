@@ -133,7 +133,7 @@ class MapLbsController extends State<MapLbsView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error requesting permission: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -233,9 +233,10 @@ class MapLbsController extends State<MapLbsView> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sample data berhasil ditambahkan ke Firebase!'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content:
+                const Text('Sample data berhasil ditambahkan ke Firebase!'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       }
@@ -249,7 +250,7 @@ class MapLbsController extends State<MapLbsView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }

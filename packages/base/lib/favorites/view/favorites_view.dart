@@ -12,7 +12,8 @@ class FavoritesView extends StatefulWidget {
       backgroundColor: Theme.of(context).colorScheme.surface,
       drawer: BaseAppDrawer.beranda(
         onRestaurantListTap: () {
-          Get.to(const BerandaView());
+          // Use back navigation instead of push to avoid stack issues
+          Get.back();
         },
         onFavoriteTap: () {},
       ),

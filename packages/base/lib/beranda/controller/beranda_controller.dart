@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:developer';
 
-class BerandaController extends State<BerandaView> {
+class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   static late BerandaController instance;
   late BerandaView view;
 
@@ -33,6 +33,14 @@ class BerandaController extends State<BerandaView> {
   void initState() {
     instance = this;
 
+    // Add this widget as an observer to lifecycle events
+    WidgetsBinding.instance.addObserver(this);
+
+    // Set listener for favorite changes
+    FavoriteEventManager.setListener(() {
+      refreshFavoriteStatesFromNavigation();
+    });
+
     // Load restaurant data when controller initializes
     fetchRestaurants();
 
@@ -51,7 +59,34 @@ class BerandaController extends State<BerandaView> {
   void dispose() {
     searchController.removeListener(_onSearchChanged);
     searchController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+
+    // Clear favorite event listener
+    FavoriteEventManager.clearListener();
+
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Refresh favorite states when app becomes active
+    if (state == AppLifecycleState.resumed) {
+      _refreshFavoriteStates();
+    }
+  }
+
+  // Method to refresh favorite states
+  Future<void> _refreshFavoriteStates() async {
+    log('Refreshing favorite states...');
+    await _loadFavoriteStates();
+  }
+
+  // Public method to refresh favorite states when returning from navigation
+  Future<void> refreshFavoriteStatesFromNavigation() async {
+    log('Refreshing favorite states from navigation...');
+    await _loadFavoriteStates();
   }
 
   // Get user location for distance calculation
@@ -231,7 +266,7 @@ class BerandaController extends State<BerandaView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: $errorMessage'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -267,6 +302,9 @@ class BerandaController extends State<BerandaView> {
           favoriteStates[restaurant.id] = newState;
         });
 
+        // Notify about favorite change (for other listening widgets)
+        FavoriteEventManager.notifyFavoriteChanged();
+
         // Show feedback to user
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -277,7 +315,9 @@ class BerandaController extends State<BerandaView> {
                     : '${restaurant.name} dihapus dari favorit',
               ),
               duration: const Duration(seconds: 2),
-              backgroundColor: newState ? Colors.green : Colors.orange,
+              backgroundColor: newState
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.orange,
             ),
           );
         }
@@ -287,7 +327,7 @@ class BerandaController extends State<BerandaView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }

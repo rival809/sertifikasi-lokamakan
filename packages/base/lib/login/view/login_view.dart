@@ -2,6 +2,7 @@ import 'package:base/login/controller/login_controller.dart';
 import 'package:base/register/view/register_view.dart';
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -41,20 +42,18 @@ class LoginView extends StatefulWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             // Shield Icon
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.security,
-                                color: Theme.of(context).colorScheme.onPrimary,
-                                size: 32,
+                            SizedBox(
+                              width: 100,
+                              height: 100,
+                              // decoration: BoxDecoration(
+                              //   color: Theme.of(context).colorScheme.primary,
+                              //   borderRadius: BorderRadius.circular(12),
+                              // ),
+                              child: Image.asset(
+                                "assets/images/logo/logo.png",
+                                fit: BoxFit.cover,
                               ),
                             ),
-                            const SizedBox(height: 24.0),
                             // Login Title
                             Text(
                               "Masuk Akun",
@@ -80,7 +79,7 @@ class LoginView extends StatefulWidget {
                                         .onSurfaceVariant,
                                   ),
                             ),
-                            const SizedBox(height: 32.0),
+                            const SizedBox(height: 16.0),
                             // Email Input Field
                             BaseForm(
                               autoFocus: true,
@@ -129,39 +128,7 @@ class LoginView extends StatefulWidget {
                             ),
                             const SizedBox(height: 16.0),
                             // Remember me and Forgot Password Row
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Checkbox(
-                                      value: controller.rememberMe,
-                                      onChanged: (value) {
-                                        controller.rememberMe = value ?? false;
-                                        controller.update();
-                                      },
-                                    ),
-                                    const Text("Ingat Saya"),
-                                  ],
-                                ),
-                                TextButton(
-                                  onPressed: controller.isLoading
-                                      ? null
-                                      : () {
-                                          controller.doForgotPassword();
-                                        },
-                                  child: Text(
-                                    "Lupa Kata Sandi?",
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 24.0),
-                            // Login Button
+
                             BasePrimaryButton(
                               text: controller.isLoading
                                   ? "Sedang Masuk..."
@@ -186,7 +153,7 @@ class LoginView extends StatefulWidget {
                                 fontSize: 14,
                               ),
                             ),
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: 8.0),
                             // Social Login Buttons
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -202,40 +169,43 @@ class LoginView extends StatefulWidget {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 24.0),
+                            const SizedBox(height: 8.0),
                             // Sign Up Text
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Belum punya akun? ",
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    // Navigate to sign up
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const RegisterView(),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    "Daftar Sekarang",
+                            IntrinsicHeight(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Belum punya akun? ",
                                     style: TextStyle(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.w600,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
                                     ),
                                   ),
-                                ),
-                              ],
+                                  InkWell(
+                                    onTap: () {
+                                      // Navigate to sign up
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RegisterView(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Daftar Sekarang",
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),

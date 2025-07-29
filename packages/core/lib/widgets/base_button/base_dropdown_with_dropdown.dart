@@ -29,7 +29,8 @@ class BaseDropdownWithSuggestionDropdown extends StatefulWidget {
       _BaseDropdownWithSuggestionDropdownState();
 }
 
-class _BaseDropdownWithSuggestionDropdownState extends State<BaseDropdownWithSuggestionDropdown> {
+class _BaseDropdownWithSuggestionDropdownState
+    extends State<BaseDropdownWithSuggestionDropdown> {
   late String dropdownValue;
 
   List<DropdownMenuItem<String>>? generateDropdownItems() {
@@ -43,7 +44,8 @@ class _BaseDropdownWithSuggestionDropdownState extends State<BaseDropdownWithSug
       return temp;
     }
 
-    return widget.leftDropdownOptions.map<DropdownMenuItem<String>>((String value) {
+    return widget.leftDropdownOptions
+        .map<DropdownMenuItem<String>>((String value) {
       return DropdownMenuItem<String>(
         value: value,
         child: Text(value),
@@ -70,10 +72,13 @@ class _BaseDropdownWithSuggestionDropdownState extends State<BaseDropdownWithSug
           // Dropdown on the left
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            color: Theme.of(context).colorScheme.tertiary, // Background color for dropdown
+            color: Theme.of(context)
+                .colorScheme
+                .tertiary, // Background color for dropdown
             child: DropdownButton<String>(
               value: dropdownValue,
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.green),
+              icon: Icon(Icons.arrow_drop_down,
+                  color: Theme.of(context).colorScheme.primary),
               underline: const SizedBox(), // Remove underline
               onChanged: (String? newValue) {
                 setState(() {

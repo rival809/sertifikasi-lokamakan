@@ -35,9 +35,9 @@ class RegisterController extends State<RegisterView> {
 
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Konfirmasi password tidak sama'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('Konfirmasi password tidak sama'),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -62,9 +62,9 @@ class RegisterController extends State<RegisterView> {
         // Register berhasil
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Registrasi berhasil!'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text('Registrasi berhasil!'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -87,7 +87,7 @@ class RegisterController extends State<RegisterView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(result.errorMessage ?? 'Registrasi gagal'),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
               duration: const Duration(seconds: 5),
               action: isRecaptchaError
                   ? SnackBarAction(
@@ -107,7 +107,7 @@ class RegisterController extends State<RegisterView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Terjadi kesalahan: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -138,9 +138,9 @@ class RegisterController extends State<RegisterView> {
         // Register dengan Google berhasil
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Registrasi dengan Google berhasil!'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text('Registrasi dengan Google berhasil!'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -157,7 +157,7 @@ class RegisterController extends State<RegisterView> {
             SnackBar(
               content:
                   Text(result.errorMessage ?? 'Registrasi dengan Google gagal'),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -167,7 +167,7 @@ class RegisterController extends State<RegisterView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Terjadi kesalahan: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }

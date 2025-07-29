@@ -47,9 +47,9 @@ class LoginController extends State<LoginView> {
         // Login berhasil
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Login berhasil!'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text('Login berhasil!'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -63,7 +63,7 @@ class LoginController extends State<LoginView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(result.errorMessage ?? 'Login gagal'),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -73,7 +73,7 @@ class LoginController extends State<LoginView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Terjadi kesalahan: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -99,9 +99,9 @@ class LoginController extends State<LoginView> {
         // Login berhasil
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Login dengan Google berhasil!'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text('Login dengan Google berhasil!'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -114,7 +114,7 @@ class LoginController extends State<LoginView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(result.errorMessage ?? 'Login dengan Google gagal'),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -124,7 +124,7 @@ class LoginController extends State<LoginView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Terjadi kesalahan: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -159,9 +159,9 @@ class LoginController extends State<LoginView> {
       if (result.isSuccess) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Email reset password telah dikirim!'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text('Email reset password telah dikirim!'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -171,7 +171,7 @@ class LoginController extends State<LoginView> {
             SnackBar(
               content:
                   Text(result.errorMessage ?? 'Gagal mengirim email reset'),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -181,7 +181,7 @@ class LoginController extends State<LoginView> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Terjadi kesalahan: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
