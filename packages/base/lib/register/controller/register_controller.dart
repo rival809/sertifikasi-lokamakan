@@ -43,9 +43,8 @@ class RegisterController extends State<RegisterView> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    isLoading = true;
+    update();
 
     try {
       final result = await AuthService.signUpWithEmailAndPassword(
@@ -112,19 +111,15 @@ class RegisterController extends State<RegisterView> {
         );
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+      isLoading = false;
+      update();
     }
   }
 
   // Register dengan Google
   Future<void> doGoogleRegister() async {
-    setState(() {
-      isLoading = true;
-    });
+    isLoading = true;
+    update();
 
     try {
       final result = await AuthService.signInWithGoogle(
@@ -173,9 +168,8 @@ class RegisterController extends State<RegisterView> {
       }
     } finally {
       if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
+        isLoading = false;
+        update();
       }
     }
   }

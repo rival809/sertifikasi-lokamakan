@@ -95,15 +95,13 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   Future<void> _getUserLocation() async {
     try {
       bool hasPermission = await LocationService.isLocationServiceEnabled();
-      setState(() {
-        isLocationEnabled = hasPermission;
-      });
+      isLocationEnabled = hasPermission;
+      update();
 
       if (hasPermission) {
         Position? position = await LocationService.getCurrentLocation();
-        setState(() {
-          userLocation = position;
-        });
+        userLocation = position;
+        update();
 
         // Update distances if we have restaurants loaded
         if (restaurants.isNotEmpty) {
@@ -119,20 +117,18 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   void _updateDistances() {
     if (userLocation == null) return;
 
-    setState(() {
-      restaurants = restaurants.map((restaurant) {
-        final distance = RestaurantService.calculateDistance(
-          userLocation!.latitude,
-          userLocation!.longitude,
-          restaurant.latitude,
-          restaurant.longitude,
-        );
-        return restaurant.copyWith(distance: distance);
-      }).toList();
+    restaurants = restaurants.map((restaurant) {
+      final distance = RestaurantService.calculateDistance(
+        userLocation!.latitude,
+        userLocation!.longitude,
+        restaurant.latitude,
+        restaurant.longitude,
+      );
+      return restaurant.copyWith(distance: distance);
+    }).toList();
 
-      // Apply current filter
-      _applyFilter();
-    });
+    // Apply current filter
+    _applyFilter();
     update();
   }
 
@@ -194,9 +190,8 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
       }
     }
 
-    setState(() {
-      filteredRestaurants = baseList;
-    });
+    filteredRestaurants = baseList;
+    update();
 
     log('Applied filter "$selectedFilter": ${filteredRestaurants.length} restaurants shown');
   }
@@ -208,9 +203,8 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
     log('Location enabled: $isLocationEnabled');
     log('Total restaurants: ${restaurants.length}');
 
-    setState(() {
-      selectedFilter = filter;
-    });
+    selectedFilter = filter;
+    update();
     _applyFilter();
   }
 
@@ -233,20 +227,18 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
 
   // Fetch restaurant list from Firebase
   Future<void> fetchRestaurants() async {
-    setState(() {
-      isLoading = true;
-      errorMessage = '';
-    });
+    isLoading = true;
+    errorMessage = '';
+    update();
 
     try {
       final List<RestaurantLocation> fetchedRestaurants =
           await RestaurantService.getAllRestaurants();
 
-      setState(() {
-        restaurants = fetchedRestaurants;
-        isLoading = false;
-        lastUpdated = DateTime.now(); // Update timestamp
-      });
+      restaurants = fetchedRestaurants;
+      isLoading = false;
+      lastUpdated = DateTime.now(); // Update timestamp
+      update();
 
       // Calculate distances if user location is available
       if (userLocation != null) {
@@ -259,10 +251,9 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
       // Load favorite states for all restaurants
       await _loadFavoriteStates();
     } catch (e) {
-      setState(() {
-        errorMessage = e.toString();
-        isLoading = false;
-      });
+      errorMessage = e.toString();
+      isLoading = false;
+      update();
 
       // Show error message to user
       if (mounted) {
@@ -282,7 +273,7 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
       final isFav = await FavoriteService.isFavorite(restaurant.id);
       favoriteStates[restaurant.id] = isFav;
     }
-    if (mounted) setState(() {});
+    update();
   }
 
   // Toggle favorite status
@@ -301,9 +292,8 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
 
       if (success) {
         final newState = !(favoriteStates[restaurant.id] ?? false);
-        setState(() {
-          favoriteStates[restaurant.id] = newState;
-        });
+        favoriteStates[restaurant.id] = newState;
+        update();
 
         // Notify about favorite change (for other listening widgets)
         FavoriteEventManager.notifyFavoriteChanged();
@@ -373,9 +363,8 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   // Clear search
   void clearSearch() {
     searchController.clear();
-    setState(() {
-      filteredRestaurants = restaurants;
-    });
+    filteredRestaurants = restaurants;
+    update();
   }
 
   // Getter for current filter

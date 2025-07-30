@@ -32,14 +32,9 @@ export 'package:flutter_map/flutter_map.dart';
 export 'package:latlong2/latlong.dart';
 
 //Model
-export 'models/global_model.dart';
 export 'models/user_model.dart';
 export 'models/theme_adapter.dart';
-export 'models/image_model.dart';
 export 'models/restaurant_location_model.dart';
-
-//dummy
-export 'dummy/dummy.dart';
 
 //Utils
 export 'enum/dialog_type.dart';
@@ -57,7 +52,6 @@ export 'services/openroute_service.dart';
 
 //Database
 export 'database/theme_database.dart';
-export 'database/version_database.dart';
 export 'database/ip_database.dart';
 export 'database/favorite_restaurant_model.dart';
 export 'database/favorite_database.dart';
@@ -79,8 +73,6 @@ export 'themes/theme.dart';
 export 'themes/theme_config.dart';
 export 'themes/theme_helper.dart';
 
-export 'universal_model/update_nopol_model.dart';
-
 export 'utils/camera/camera_helper.dart';
 export 'utils/image_util/image_util.dart';
 export 'utils/date_formater/date_formater.dart';
@@ -97,39 +89,21 @@ export 'utils/admin_test_helper.dart';
 
 export 'media_res/media_res.dart';
 
-export 'enum/status_permintaan_enum.dart';
-
 export 'widgets/base_button/base_danger_button.dart';
 export 'widgets/base_button/base_dropdown_button.dart';
-export 'widgets/base_button/base_dropdown_search.dart';
-export "widgets/base_button/base_dropdown_with_search_form.dart";
-export "widgets/base_button/base_dropdown_with_search_form_v3.dart";
-export "widgets/base_button/base_dropdown_search_multi_select.dart";
 export 'widgets/base_button/base_primary_button.dart';
 export 'widgets/base_button/base_secondary_button.dart';
-export 'widgets/base_button/base_icon_button.dart';
 export 'widgets/base_button/base_secondary_danger_button.dart';
 export 'widgets/base_button/base_tertiary_button.dart';
-export 'widgets/base_button/filter_button_plat.dart';
-export 'widgets/base_button/base_dropdown_checkbox.dart';
 export 'widgets/base_card/base_card_info.dart';
-export 'widgets/base_card/card_label.dart';
 export 'widgets/base_card/data_color.dart';
-export 'widgets/base_card/base_card.dart';
 export 'widgets/base_dialog/show_base_dialog.dart';
 export 'widgets/base_dialog/show_info_dialog.dart';
 export 'widgets/base_dialog/content_dialog_selesai.dart';
 export 'widgets/base_dialog/content_dialog_konfirmasi.dart';
-export 'widgets/base_dialog/show_base_dialog_loading.dart';
 export 'widgets/base_form/base_form.dart';
-export 'widgets/base_form/base_form_util.dart';
-export 'widgets/base_form/disable_form.dart';
-export 'widgets/base_center/base_center.dart';
 export 'widgets/base_form/base_prefix_rupiah.dart';
 export 'widgets/base_form//base_sufix_calendar.dart';
-export 'widgets/base_form/base_checkbox.dart';
-export 'widgets/base_form/base_form_suggestion.dart';
-export 'widgets/base_expansion_tile/base_expansion_tile.dart';
 export 'widgets/data/one_data.dart';
 export 'widgets/data/row_data.dart';
 export 'widgets/loading/circle_dialog_loading.dart';
@@ -142,7 +116,6 @@ export 'widgets/container/container_garis_putus_putus.dart';
 export 'widgets/base_dialog/show_base_dialog_selesai.dart';
 export 'widgets/base_dialog/show_dialog_confirm.dart';
 export 'widgets/base_form/suggestion_form_field.dart';
-export 'widgets/header_stepper/header_stepper.dart';
 export 'widgets/restaurant_image/restaurant_image_widget.dart';
 export 'widgets/restaurant_card/base_restaurant_card.dart';
 export 'widgets/drawer/base_app_drawer.dart';

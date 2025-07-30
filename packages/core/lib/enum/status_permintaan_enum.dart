@@ -1,1 +1,0 @@
-enum StatusPermintaan { diterima, ditolak }

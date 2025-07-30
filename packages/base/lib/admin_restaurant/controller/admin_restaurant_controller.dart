@@ -25,12 +25,11 @@ class AdminRestaurantController extends State<AdminRestaurantView> {
 
   /// Clear the input fields
   void clearForm() {
-    setState(() {
-      nameController.clear();
-      descriptionController.clear();
-      validationMessage = '';
-      isValidationError = false;
-    });
+    nameController.clear();
+    descriptionController.clear();
+    validationMessage = '';
+    isValidationError = false;
+    update();
   }
 
   /// Generate random restaurant data and save to Firebase
@@ -48,11 +47,10 @@ class AdminRestaurantController extends State<AdminRestaurantView> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-      validationMessage = '';
-      isValidationError = false;
-    });
+    isLoading = true;
+    validationMessage = '';
+    isValidationError = false;
+    update();
 
     try {
       // Generate restaurant data with random values
@@ -69,7 +67,8 @@ class AdminRestaurantController extends State<AdminRestaurantView> {
       _showValidationMessage('Terjadi kesalahan: ${e.toString()}',
           isError: true);
     } finally {
-      setState(() => isLoading = false);
+      isLoading = false;
+      update();
     }
   }
 
@@ -170,10 +169,9 @@ class AdminRestaurantController extends State<AdminRestaurantView> {
 
   /// Show validation message to user
   void _showValidationMessage(String message, {bool isError = false}) {
-    setState(() {
-      validationMessage = message;
-      isValidationError = isError;
-    });
+    validationMessage = message;
+    isValidationError = isError;
+    update();
   }
 
   @override

@@ -59,7 +59,8 @@ class _BaseDropdownButtonState<T> extends State<BaseDropdownButton<T>> {
     super.initState();
     sortedItems = widget.items ?? [];
     if (widget.sortItem != false) {
-      sortedItems.sort((a, b) => widget.itemAsString(a).compareTo(widget.itemAsString(b)));
+      sortedItems.sort(
+          (a, b) => widget.itemAsString(a).compareTo(widget.itemAsString(b)));
     }
 
     textController.text = widget.value.toString();
@@ -115,7 +116,10 @@ class _BaseDropdownButtonState<T> extends State<BaseDropdownButton<T>> {
                           if (widget.require ?? false)
                             TextSpan(
                               text: ' *',
-                              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(
                                     color: error,
                                   ),
                             ),
@@ -161,9 +165,8 @@ class _BaseDropdownButtonState<T> extends State<BaseDropdownButton<T>> {
                 }
               : null,
           onChanged: (T? data) {
-            setState(() {
-              selectedItem = data;
-            });
+            selectedItem = data;
+            update();
             if (widget.onChanged != null) {
               widget.onChanged!(data);
             }
@@ -272,7 +275,9 @@ class _BaseDropdownButtonState<T> extends State<BaseDropdownButton<T>> {
           dropdownBuilder: (context, selectedItem) {
             return selectedItem == null
                 ? Text(
-                    widget.enabled ?? true ? StringUtils.trimString(widget.hint) : '-',
+                    widget.enabled ?? true
+                        ? StringUtils.trimString(widget.hint)
+                        : '-',
                     style: widget.valueItemStyle ??
                         Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: isDarkMode(context) ? textMedium : gray600,
@@ -299,7 +304,9 @@ class _BaseDropdownButtonState<T> extends State<BaseDropdownButton<T>> {
             tooltip: "Pilih ${widget.label}",
             icon: SvgPicture.asset(
               "assets/icons/chevron/bawah.svg",
-              colorFilter: widget.enabled ?? true ? colorFilterGreen600 : colorFilterGray600,
+              colorFilter: widget.enabled ?? true
+                  ? colorFilterGreen600
+                  : colorFilterGray600,
             ),
           ),
           popupProps: PopupProps.menu(
@@ -320,7 +327,8 @@ class _BaseDropdownButtonState<T> extends State<BaseDropdownButton<T>> {
             ),
             itemBuilder: (BuildContext context, T item, bool isSelected) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                 child: Text(
                   widget.itemAsString(item),
                   textAlign: TextAlign.left,
@@ -337,7 +345,8 @@ class _BaseDropdownButtonState<T> extends State<BaseDropdownButton<T>> {
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: widget.borderRadius!,
-                side: BorderSide(color: isDarkMode(context) ? mediumEmphasis : blueGray50),
+                side: BorderSide(
+                    color: isDarkMode(context) ? mediumEmphasis : blueGray50),
               ),
             ),
             scrollbarProps: ScrollbarProps(

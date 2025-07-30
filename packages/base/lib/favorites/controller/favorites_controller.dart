@@ -19,22 +19,19 @@ class FavoritesController extends State<FavoritesView> {
 
   // Load favorite restaurants
   Future<void> loadFavorites() async {
-    setState(() {
-      isLoading = true;
-      errorMessage = '';
-    });
+    isLoading = true;
+    errorMessage = '';
+    update();
 
     try {
       final favoriteList = await FavoriteService.getAllFavorites();
-      setState(() {
-        favorites = favoriteList;
-        isLoading = false;
-      });
+      favorites = favoriteList;
+      isLoading = false;
+      update();
     } catch (e) {
-      setState(() {
-        errorMessage = e.toString();
-        isLoading = false;
-      });
+      errorMessage = e.toString();
+      isLoading = false;
+      update();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -52,9 +49,8 @@ class FavoritesController extends State<FavoritesView> {
     try {
       final success = await FavoriteService.removeFromFavorites(favorite.id);
       if (success) {
-        setState(() {
-          favorites.removeWhere((f) => f.id == favorite.id);
-        });
+        favorites.removeWhere((f) => f.id == favorite.id);
+        update();
 
         // Notify about favorite change
         FavoriteEventManager.notifyFavoriteChanged();
@@ -130,9 +126,8 @@ class FavoritesController extends State<FavoritesView> {
       try {
         final success = await FavoriteService.clearUserFavorites();
         if (success) {
-          setState(() {
-            favorites.clear();
-          });
+          favorites.clear();
+          update();
 
           // Notify about favorite change
           FavoriteEventManager.notifyFavoriteChanged();

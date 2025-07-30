@@ -15,7 +15,6 @@ class RestaurantDetailView extends StatefulWidget {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: CustomScrollView(
         slivers: [
-          // Header dengan gambar restaurant
           SliverAppBar(
             leadingWidth: 64,
             leading: Container(
@@ -124,14 +123,12 @@ class RestaurantDetailView extends StatefulWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceVariant,
       ),
-      child: restaurant.pictureUrl?.isNotEmpty == true
-          ? Image.network(
-              restaurant.pictureUrl!,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) =>
-                  _buildImagePlaceholder(context),
-            )
-          : _buildImagePlaceholder(context),
+      child: Image.network(
+        restaurant.pictureUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            _buildImagePlaceholder(context),
+      ),
     );
   }
 
@@ -286,36 +283,12 @@ class RestaurantDetailView extends StatefulWidget {
       children: [
         _buildSectionTitle(context, 'Navigasi & Lokasi'),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            // Directions button
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: controller.userLocation != null
-                    ? () => controller.openDirections()
-                    : null,
-                icon: const Icon(Icons.directions),
-                label: const Text('Petunjuk Arah'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // Share location button
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => controller.shareRestaurant(),
-                icon: const Icon(Icons.share),
-                label: const Text('Bagikan'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-          ],
+        BasePrimaryButton(
+          onPressed: controller.userLocation != null
+              ? () => controller.openDirections()
+              : null,
+          suffixIcon: const Icon(Icons.directions),
+          text: 'Petunjuk Arah',
         ),
       ],
     );

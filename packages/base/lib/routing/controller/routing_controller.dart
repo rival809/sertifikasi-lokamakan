@@ -28,10 +28,9 @@ class RoutingController extends State<RoutingView> {
   }
 
   Future<void> _loadRoute() async {
-    setState(() {
-      isLoading = true;
-      hasError = false;
-    });
+    isLoading = true;
+    hasError = false;
+    update();
 
     try {
       final startPoint = LatLng(userLocation.latitude, userLocation.longitude);
@@ -61,9 +60,8 @@ class RoutingController extends State<RoutingView> {
       }
     } catch (e) {
       debugPrint('Error loading route: $e');
-      setState(() {
-        hasError = true;
-      });
+      hasError = true;
+      update();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -78,9 +76,8 @@ class RoutingController extends State<RoutingView> {
         );
       }
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      isLoading = false;
+      update();
     }
   }
 
@@ -125,9 +122,8 @@ class RoutingController extends State<RoutingView> {
   }
 
   void onMapReady() {
-    setState(() {
-      isMapReady = true;
-    });
+    isMapReady = true;
+    update();
 
     // If route is already loaded, fit the map
     if (routeCoordinates.isNotEmpty) {
@@ -136,16 +132,14 @@ class RoutingController extends State<RoutingView> {
   }
 
   void switchMapStyle() {
-    setState(() {
-      isDarkMode = !isDarkMode;
-    });
+    isDarkMode = !isDarkMode;
+    update();
   }
 
   void changeTransportMode(String mode) {
     if (mode != currentTransportMode) {
-      setState(() {
-        currentTransportMode = mode;
-      });
+      currentTransportMode = mode;
+      update();
       _loadRoute();
     }
   }

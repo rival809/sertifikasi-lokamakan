@@ -59,18 +59,12 @@ class _BaseSecondaryDangerButtonState extends State<BaseSecondaryDangerButton> {
               onHover ? Theme.of(context).hoverColor : Colors.transparent),
         ),
         onFocusChange: (value) {
-          setState(
-            () {
-              onHover = value;
-            },
-          );
+          onHover = value;
+          update();
         },
         onHover: (value) {
-          setState(
-            () {
-              onHover = value;
-            },
-          );
+          onHover = value;
+          update();
         },
         onPressed: widget.onPressed,
         child: Padding(

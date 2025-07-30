@@ -61,9 +61,7 @@ class Setup {
     //END Initialize Hive
 
     if (!kIsWeb) {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
-      VersionDatabase.save(packageInfo.version);
+      // PackageInfo packageInfo = await PackageInfo.fromPlatform();
     }
   }
 }

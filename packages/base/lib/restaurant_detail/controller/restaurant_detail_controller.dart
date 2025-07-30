@@ -18,9 +18,8 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
   }
 
   Future<void> _initializeData() async {
-    setState(() {
-      isLoading = true;
-    });
+    isLoading = true;
+    update();
 
     try {
       // Check if restaurant is in favorites
@@ -31,9 +30,8 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
     } catch (e) {
       debugPrint('Error initializing restaurant detail: $e');
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      isLoading = false;
+      update();
     }
   }
 
@@ -51,7 +49,7 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
           restaurant.location.longitude,
         );
 
-        setState(() {});
+        update();
       }
     } catch (e) {
       debugPrint('Error getting location: $e');
@@ -66,9 +64,8 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
         await FavoriteService.addToFavorites(restaurant);
       }
 
-      setState(() {
-        isFavorite = !isFavorite;
-      });
+      isFavorite = !isFavorite;
+      update();
 
       // Notify about favorite change
       FavoriteEventManager.notifyFavoriteChanged();
@@ -141,15 +138,10 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
     try {
       // Try multiple URL formats for better compatibility
       List<String> urlFormats = [
-        // Google Maps intent for Android
         'google.navigation:q=${restaurant.location.latitude},${restaurant.location.longitude}',
-        // Geo URI for Android
         'geo:${restaurant.location.latitude},${restaurant.location.longitude}?q=${restaurant.location.latitude},${restaurant.location.longitude}(${Uri.encodeComponent(restaurant.name)})',
-        // Google Maps search API
         'https://www.google.com/maps/search/?api=1&query=${restaurant.location.latitude},${restaurant.location.longitude}',
-        // Google Maps with place query
         'https://www.google.com/maps/place/${restaurant.location.latitude},${restaurant.location.longitude}',
-        // Simple Google Maps coordinate URL
         'https://maps.google.com/?q=${restaurant.location.latitude},${restaurant.location.longitude}',
       ];
 
@@ -192,50 +184,6 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
           ),
         );
       }
-    }
-  }
-
-  Future<void> shareRestaurant() async {
-    try {
-      final shareText = '''
-🍽️ ${restaurant.name}
-
-📍 ${restaurant.address}, ${restaurant.city}
-⭐ Rating: ${restaurant.rating?.toStringAsFixed(1) ?? 'N/A'}
-${distance != null ? '📏 Jarak: ${LocationService.formatDistance(distance)}' : ''}
-
-${restaurant.description ?? ''}
-
-📱 Lihat di Google Maps:
-https://www.google.com/maps/search/?api=1&query=${restaurant.location.latitude},${restaurant.location.longitude}
-
-#LokaMAkan #Restaurant #${restaurant.city}
-      '''
-          .trim();
-
-      // Use share functionality (placeholder - would use share_plus package in real implementation)
-      debugPrint('Sharing: $shareText');
-
-      // For now, show dialog with share text
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Bagikan Restoran'),
-            content: SingleChildScrollView(
-              child: Text(shareText),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Tutup'),
-              ),
-            ],
-          ),
-        );
-      }
-    } catch (e) {
-      debugPrint('Error sharing restaurant: $e');
     }
   }
 

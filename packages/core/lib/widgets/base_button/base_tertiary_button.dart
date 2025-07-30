@@ -58,18 +58,12 @@ class _BaseTertiaryButtonState extends State<BaseTertiaryButton> {
               onHover ? Theme.of(context).hoverColor : Colors.transparent),
         ),
         onFocusChange: (value) {
-          setState(
-            () {
-              onHover = value;
-            },
-          );
+          onHover = value;
+          update();
         },
         onHover: (value) {
-          setState(
-            () {
-              onHover = value;
-            },
-          );
+          onHover = value;
+          update();
         },
         onPressed: widget.onPressed,
         child: Padding(
