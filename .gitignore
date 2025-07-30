@@ -10,7 +10,10 @@
 .svn/
 .env
 migrate_working_dir/
-*.md
+JAWABAN_SERTIFIKASI.md
+ujikomsertifikasi.md
+
+
 
 # IntelliJ related
 *.iml
