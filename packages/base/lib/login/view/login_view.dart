@@ -53,6 +53,9 @@ class LoginView extends StatefulWidget {
                                 fit: BoxFit.cover,
                               ),
                             ),
+                            const SizedBox(
+                              height: 8.0,
+                            ),
                             // Login Title
                             Text(
                               "Masuk Akun",

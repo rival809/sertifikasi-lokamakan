@@ -352,33 +352,31 @@ class RoutingView extends StatefulWidget {
           ),
         ),
       ),
-      child: Row(
-        children: [
-          // Show instructions button
-          Expanded(
-            child: OutlinedButton.icon(
-              onPressed: () => _showInstructions(context, controller),
-              icon: const Icon(Icons.list),
-              label: const Text('Lihat Instruksi'),
-            ),
-          ),
-          const SizedBox(width: 12),
-
-          // Start navigation button
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: controller.routeCoordinates.isNotEmpty
-                  ? () => controller.openInGoogleMaps()
-                  : null,
-              icon: const Icon(Icons.navigation),
-              label: const Text('Mulai Navigasi'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            // Show instructions button
+            Expanded(
+              child: BaseSecondaryButton(
+                onPressed: () => _showInstructions(context, controller),
+                prefixIcon: const Icon(Icons.list),
+                text: 'Lihat Instruksi',
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 16),
+
+            // Start navigation button
+            Expanded(
+              child: BasePrimaryButton(
+                onPressed: controller.routeCoordinates.isNotEmpty
+                    ? () => controller.openInGoogleMaps()
+                    : null,
+                prefixIcon: const Icon(Icons.navigation),
+                text: 'Mulai Navigasi',
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
