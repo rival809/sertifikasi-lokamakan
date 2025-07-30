@@ -1,13 +1,19 @@
 import 'package:core/core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Widget drawer yang dapat digunakan kembali di seluruh aplikasi
-class BaseAppDrawer extends StatelessWidget {
+class BaseAppDrawer extends StatefulWidget {
   final String? userName;
   final String? userEmail;
   final Widget? userAvatar;
   final List<DrawerMenuModel> menuItems;
   final Color? headerColor;
+
+  // Callback functions for dynamic menu building
+  final VoidCallback? onRestaurantListTap;
+  final VoidCallback? onFavoriteTap;
+  final VoidCallback? onAdminRestaurantTap;
 
   const BaseAppDrawer({
     super.key,
@@ -16,6 +22,9 @@ class BaseAppDrawer extends StatelessWidget {
     this.userAvatar,
     required this.menuItems,
     this.headerColor,
+    this.onRestaurantListTap,
+    this.onFavoriteTap,
+    this.onAdminRestaurantTap,
   });
 
   /// Factory constructor untuk drawer beranda dengan menu default
@@ -24,60 +33,91 @@ class BaseAppDrawer extends StatelessWidget {
     String? userEmail,
     Widget? userAvatar,
     Color? headerColor,
-    required VoidCallback onRestaurantListTap,
-    required VoidCallback onFavoriteTap,
     VoidCallback? onAdminRestaurantTap,
   }) {
-    // Create base menu items
-    List<DrawerMenuModel> menuItems = [
-      DrawerMenuModel(
-        title: 'Daftar Restoran',
-        icon: Icons.restaurant_outlined,
-        onTap: onRestaurantListTap,
-      ),
-      DrawerMenuModel(
-        title: 'Favorit',
-        icon: Icons.favorite_outline,
-        onTap: onFavoriteTap,
-      ),
-    ];
-
-    // Add admin menu only for user ID "1" (with test mode support)
-    final isAdmin = AdminTestHelper.isCurrentUserAdmin;
-    if (isAdmin && onAdminRestaurantTap != null) {
-      menuItems.add(
-        DrawerMenuModel(
-          title: 'Admin Restaurant',
-          icon: Icons.admin_panel_settings,
-          onTap: onAdminRestaurantTap,
-        ),
-      );
-    }
-
     return BaseAppDrawer(
       userName: userName,
       userEmail: userEmail,
       userAvatar: userAvatar,
       headerColor: headerColor,
-      menuItems: menuItems,
+      menuItems: const [], // Will be built dynamically using ValueListenableBuilder
+      onAdminRestaurantTap: onAdminRestaurantTap,
     );
+  }
+
+  @override
+  State<BaseAppDrawer> createState() => _BaseAppDrawerState();
+}
+
+class _BaseAppDrawerState extends State<BaseAppDrawer> {
+  List<DrawerMenuModel> _buildMenuItems(bool isAdmin) {
+    List<DrawerMenuModel> menuItems = [];
+
+    // If widget.menuItems is not empty, use it (for non-beranda drawers)
+    if (widget.menuItems.isNotEmpty) {
+      return widget.menuItems;
+    }
+
+    // Build dynamic menu for beranda drawer
+    if (widget.onRestaurantListTap != null) {
+      menuItems.add(
+        DrawerMenuModel(
+          title: 'Daftar Restoran',
+          icon: Icons.restaurant_outlined,
+          onTap: widget.onRestaurantListTap!,
+        ),
+      );
+    }
+
+    if (widget.onFavoriteTap != null) {
+      menuItems.add(
+        DrawerMenuModel(
+          title: 'Favorit',
+          icon: Icons.favorite_outline,
+          onTap: widget.onFavoriteTap!,
+        ),
+      );
+    }
+
+    // Add admin menu only if user is admin
+    if (isAdmin && widget.onAdminRestaurantTap != null) {
+      menuItems.add(
+        DrawerMenuModel(
+          title: 'Admin Restaurant',
+          icon: Icons.admin_panel_settings,
+          onTap: widget.onAdminRestaurantTap!,
+        ),
+      );
+    }
+
+    return menuItems;
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Drawer(
-        child: Column(
-          children: [
-            _buildDrawerHeader(context),
-            ...menuItems.map((item) => _buildMenuItem(context, item)),
-            const Spacer(),
-            _buildMenuItem(context, DrawerMenuModel.divider()),
-            _buildMenuItem(context, DrawerMenuModel.logout(onTap: () {
-              _showLogoutDialog(context);
-            })),
-          ],
-        ),
+      child: ValueListenableBuilder<bool>(
+        valueListenable: AdminTestHelper.adminStateNotifier,
+        builder: (context, isAdminNotified, child) {
+          final isAdmin = AdminTestHelper.isCurrentUserAdmin;
+          final menuItems = _buildMenuItems(isAdmin);
+
+          return Drawer(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            surfaceTintColor: Colors.transparent,
+            child: Column(
+              children: [
+                _buildDrawerHeader(context),
+                ...menuItems.map((item) => _buildMenuItem(context, item)),
+                const Spacer(),
+                _buildMenuItem(context, DrawerMenuModel.divider()),
+                _buildMenuItem(context, DrawerMenuModel.logout(onTap: () {
+                  _showLogoutDialog(context);
+                })),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -86,7 +126,7 @@ class BaseAppDrawer extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: headerColor ?? Theme.of(context).primaryColor,
+        color: widget.headerColor ?? Theme.of(context).primaryColor,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,14 +135,15 @@ class BaseAppDrawer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              userAvatar ??
+              widget.userAvatar ??
                   CircleAvatar(
                     radius: 30,
                     backgroundColor: Theme.of(context).colorScheme.onPrimary,
                     child: Icon(
                       Icons.person,
                       size: 35,
-                      color: headerColor ?? Theme.of(context).primaryColor,
+                      color:
+                          widget.headerColor ?? Theme.of(context).primaryColor,
                     ),
                   ),
               const SizedBox(width: 8),
@@ -112,28 +153,45 @@ class BaseAppDrawer extends StatelessWidget {
           const SizedBox(
             height: 8.0,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Text(
-                userName ??
-                    SessionService.currentUserData?.displayName ??
-                    "User",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.userName ??
+                          SessionService.currentUserData?.displayName ??
+                          "User",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      widget.userEmail ??
+                          SessionService.currentUserData?.email ??
+                          "user@example.com",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Text(
-                userEmail ??
-                    SessionService.currentUserData?.email ??
-                    "user@example.com",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontSize: 14,
+              // Debug button untuk testing admin features
+              if (kDebugMode)
+                IconButton(
+                  icon: Icon(
+                    Icons.bug_report,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                  onPressed: () {
+                    AdminTestHelper.showAdminTestDialog(context);
+                  },
                 ),
-              ),
             ],
           ),
         ],

@@ -185,9 +185,6 @@ class BaseRestaurantCard extends StatelessWidget {
               Expanded(
                 child: _buildRestaurantInfo(context),
               ),
-
-              // Trailing Widget (favorite button, remove button, etc.)
-              if (trailingWidget != null) trailingWidget!,
             ],
           ),
         ),
@@ -204,19 +201,68 @@ class BaseRestaurantCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceVariant,
         ),
-        child: Image.network(
-          restaurant.pictureUrl ?? '',
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Icon(
-                Icons.image_not_supported,
-                size: imageSize / 2,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            );
-          },
-        ),
+        child: _buildImageWithFallback(context),
+      ),
+    );
+  }
+
+  Widget _buildImageWithFallback(BuildContext context) {
+    final imageUrl = restaurant.pictureUrl;
+
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return _buildImagePlaceholder(context);
+    }
+
+    // Fallback image that is known to work
+    const fallbackImageUrl =
+        'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&q=80';
+
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    (loadingProgress.expectedTotalBytes ?? 1)
+                : null,
+            strokeWidth: 2,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        // Suppress 404 error logging to avoid console spam
+        if (!error.toString().contains('404')) {
+          debugPrint('Error loading restaurant card image: $error');
+        }
+
+        // Try fallback image
+        if (imageUrl != fallbackImageUrl) {
+          return Image.network(
+            fallbackImageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error2, stackTrace2) {
+              return _buildImagePlaceholder(context);
+            },
+          );
+        }
+
+        // If even fallback fails, show placeholder
+        return _buildImagePlaceholder(context);
+      },
+    );
+  }
+
+  Widget _buildImagePlaceholder(BuildContext context) {
+    return Center(
+      child: Icon(
+        Icons.restaurant,
+        size: imageSize / 2,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }
@@ -238,16 +284,16 @@ class BaseRestaurantCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (restaurant.rating != null) ...[
-              const SizedBox(width: 12),
+            if (showDistance && distance != null) ...[
+              const SizedBox(width: 8),
               Icon(
-                Icons.star,
+                Icons.near_me,
                 size: 14,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 4),
               Text(
-                restaurant.rating!.toStringAsFixed(1),
+                '${distance!.toStringAsFixed(1)} km',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 12,
@@ -269,7 +315,7 @@ class BaseRestaurantCard extends StatelessWidget {
             const SizedBox(width: 4),
             Expanded(
               child: Text(
-                restaurant.city ?? 'Unknown City',
+                restaurant.city ?? '',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 12,
@@ -277,16 +323,16 @@ class BaseRestaurantCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            if (showDistance && distance != null) ...[
-              const SizedBox(width: 8),
+            if (restaurant.rating != null) ...[
+              const SizedBox(width: 12),
               Icon(
-                Icons.near_me,
+                Icons.star,
                 size: 14,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
               const SizedBox(width: 4),
               Text(
-                '${distance!.toStringAsFixed(1)} km',
+                restaurant.rating!.toStringAsFixed(1),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 12,
@@ -295,20 +341,31 @@ class BaseRestaurantCard extends StatelessWidget {
             ],
           ],
         ),
+        const SizedBox(height: 4.0),
+
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (restaurant.description?.isNotEmpty == true ||
+                subtitle != null) ...[
+              Expanded(
+                child: Text(
+                  subtitle ?? restaurant.description ?? '',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+            // Trailing Widget (favorite button, remove button, etc.)
+            if (trailingWidget != null) trailingWidget!,
+          ],
+        ),
 
         // Description or Subtitle
-        if (restaurant.description?.isNotEmpty == true || subtitle != null) ...[
-          const SizedBox(height: 8),
-          Text(
-            subtitle ?? restaurant.description ?? 'No description',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              fontSize: 12,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
 
         // Time added for favorites
         if (addedAt != null) ...[

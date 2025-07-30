@@ -126,8 +126,23 @@ class RestaurantDetailView extends StatefulWidget {
       child: Image.network(
         restaurant.pictureUrl!,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) =>
-            _buildImagePlaceholder(context),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      (loadingProgress.expectedTotalBytes ?? 1)
+                  : null,
+              strokeWidth: 2,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return _buildImagePlaceholder(context);
+        },
       ),
     );
   }
@@ -208,7 +223,7 @@ class RestaurantDetailView extends StatefulWidget {
         color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline,
         ),
       ),
       child: Column(
@@ -244,15 +259,15 @@ class RestaurantDetailView extends StatefulWidget {
                 const SizedBox(width: 8),
                 Text(
                   LocationService.formatDistance(controller.distance),
+                  textAlign: TextAlign.justify,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                const Spacer(),
                 Text(
-                  'dari lokasi Anda',
+                  ' dari lokasi Anda',
                   style: TextStyle(
                     fontSize: 12,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,

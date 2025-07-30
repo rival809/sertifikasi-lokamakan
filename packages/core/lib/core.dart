@@ -30,6 +30,7 @@ export 'package:cloud_firestore/cloud_firestore.dart';
 export 'package:geolocator/geolocator.dart' hide ServiceStatus;
 export 'package:flutter_map/flutter_map.dart';
 export 'package:latlong2/latlong.dart';
+export 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //Model
 export 'models/user_model.dart';

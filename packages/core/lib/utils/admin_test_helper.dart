@@ -6,10 +6,20 @@ class AdminTestHelper {
   static bool _isTestMode = false;
   static String? _testUserId;
 
+  // ValueNotifier untuk notifikasi perubahan state admin
+  static final ValueNotifier<bool> adminStateNotifier =
+      ValueNotifier<bool>(false);
+
+  // Initialize notifier value
+  static void _updateNotifier() {
+    adminStateNotifier.value = isCurrentUserAdmin;
+  }
+
   /// Enable test mode dengan user ID tertentu
   static void enableTestMode(String userId) {
     _isTestMode = true;
     _testUserId = userId;
+    _updateNotifier(); // Notify listeners
     debugPrint('Admin Test Mode Enabled: User ID = $userId');
   }
 
@@ -17,6 +27,7 @@ class AdminTestHelper {
   static void disableTestMode() {
     _isTestMode = false;
     _testUserId = null;
+    _updateNotifier(); // Notify listeners
     debugPrint('Admin Test Mode Disabled');
   }
 

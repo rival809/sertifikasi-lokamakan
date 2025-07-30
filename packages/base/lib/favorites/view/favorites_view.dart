@@ -10,17 +10,13 @@ class FavoritesView extends StatefulWidget {
   Widget build(BuildContext context, FavoritesController controller) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      drawer: BaseAppDrawer.beranda(
-        onRestaurantListTap: () {
-          // Use back navigation instead of push to avoid stack issues
-          Get.back();
-        },
-        onFavoriteTap: () {},
-        onAdminRestaurantTap: () {
-          newRouter.push(RouterUtils.adminRestaurant);
-        },
-      ),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            newRouter.pop();
+          },
+        ),
         iconTheme: IconThemeData(
           color: Theme.of(context)
               .colorScheme

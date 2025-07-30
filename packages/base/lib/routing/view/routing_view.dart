@@ -116,7 +116,7 @@ class RoutingView extends StatefulWidget {
         color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline,
         ),
       ),
       child: Column(
@@ -241,90 +241,103 @@ class RoutingView extends StatefulWidget {
   }
 
   Widget _buildMap(BuildContext context, RoutingController controller) {
-    return FlutterMap(
-      mapController: controller.mapController,
-      options: MapOptions(
-        initialCenter: LatLng(
-          userLocation.latitude,
-          userLocation.longitude,
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
         ),
-        initialZoom: 13.0,
-        maxZoom: 18.0,
-        minZoom: 5.0,
-        onMapReady: controller.onMapReady,
       ),
-      children: [
-        // Map tiles
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.lokamakan',
-          maxZoom: 19,
-        ),
-
-        // Route polyline
-        if (controller.routeCoordinates.isNotEmpty)
-          PolylineLayer(
-            polylines: [
-              Polyline(
-                points: controller.routeCoordinates,
-                strokeWidth: 4.0,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: FlutterMap(
+          mapController: controller.mapController,
+          options: MapOptions(
+            initialCenter: LatLng(
+              userLocation.latitude,
+              userLocation.longitude,
+            ),
+            initialZoom: 13.0,
+            maxZoom: 18.0,
+            minZoom: 5.0,
+            onMapReady: controller.onMapReady,
           ),
-
-        // Markers
-        MarkerLayer(
-          markers: [
-            // Start marker (user location)
-            Marker(
-              point: LatLng(userLocation.latitude, userLocation.longitude),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.surface,
-                    width: 3,
-                  ),
-                ),
-                child: Icon(
-                  Icons.my_location,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  size: 20,
-                ),
-              ),
+          children: [
+            // Map tiles
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.example.lokamakan',
+              maxZoom: 19,
             ),
 
-            // Destination marker (restaurant)
-            Marker(
-              point: LatLng(
-                restaurant.location.latitude,
-                restaurant.location.longitude,
+            // Route polyline
+            if (controller.routeCoordinates.isNotEmpty)
+              PolylineLayer(
+                polylines: [
+                  Polyline(
+                    points: controller.routeCoordinates,
+                    strokeWidth: 4.0,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ],
               ),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.error,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.surface,
-                    width: 3,
+
+            // Markers
+            MarkerLayer(
+              markers: [
+                // Start marker (user location)
+                Marker(
+                  point: LatLng(userLocation.latitude, userLocation.longitude),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.surface,
+                        width: 3,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.my_location,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      size: 20,
+                    ),
                   ),
                 ),
-                child: Icon(
-                  Icons.restaurant,
-                  color: Theme.of(context).colorScheme.onError,
-                  size: 20,
+
+                // Destination marker (restaurant)
+                Marker(
+                  point: LatLng(
+                    restaurant.location.latitude,
+                    restaurant.location.longitude,
+                  ),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.error,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.surface,
+                        width: 3,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.restaurant,
+                      color: Theme.of(context).colorScheme.onError,
+                      size: 20,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 

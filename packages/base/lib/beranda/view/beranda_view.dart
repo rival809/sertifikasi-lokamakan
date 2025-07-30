@@ -2,7 +2,6 @@ import 'package:base/beranda/controller/beranda_controller.dart';
 import 'package:base/favorites/view/favorites_view.dart';
 import 'package:base/restaurant_detail/view/restaurant_detail_view.dart';
 import 'package:core/core.dart' hide RefreshIndicator;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class BerandaView extends StatefulWidget {
@@ -12,48 +11,9 @@ class BerandaView extends StatefulWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       drawer: BaseAppDrawer.beranda(
-        onRestaurantListTap: () {},
-        onFavoriteTap: () {
-          Get.to(const FavoritesView());
-        },
         onAdminRestaurantTap: () {
           newRouter.push(RouterUtils.adminRestaurant);
         },
-      ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-        ),
-        child: IntrinsicHeight(
-          child: Row(
-            children: [
-              Expanded(
-                child: controller.currentFilter == 'all'
-                    ? BasePrimaryButton(
-                        onPressed: () => controller.setFilter('all'),
-                        text: 'Semua',
-                      )
-                    : BaseSecondaryButton(
-                        onPressed: () => controller.setFilter('all'),
-                        text: 'Semua',
-                      ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: controller.currentFilter == 'nearest'
-                    ? BasePrimaryButton(
-                        onPressed: () => controller.setFilter('nearest'),
-                        text: 'Terdekat',
-                      )
-                    : BaseSecondaryButton(
-                        onPressed: () => controller.setFilter('nearest'),
-                        text: 'Terdekat',
-                      ),
-              ),
-            ],
-          ),
-        ),
       ),
       body: SafeArea(
         child: NestedScrollView(
@@ -63,37 +23,52 @@ class BerandaView extends StatefulWidget {
                 leading: IconButton(
                   icon: Icon(
                     Icons.menu,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: innerBoxIsScrolled
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                   onPressed: () => Scaffold.of(context).openDrawer(),
                 ),
                 title: Text(
                   'Restoran',
-                  style: Theme.of(context).textTheme.displayMedium,
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                        color: innerBoxIsScrolled
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onSurface,
+                      ),
                 ),
                 actions: [
                   // Refresh button
                   IconButton(
                     icon: const Icon(Icons.refresh),
+                    color: innerBoxIsScrolled
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : Theme.of(context).colorScheme.onSurface,
                     onPressed: controller.refreshData,
                     tooltip: 'Refresh Data',
                   ),
-                  // Debug button untuk testing admin features
-                  if (kDebugMode)
-                    IconButton(
-                      icon: const Icon(Icons.bug_report),
-                      onPressed: () {
-                        AdminTestHelper.showAdminTestDialog(context);
-                      },
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.favorite_sharp),
+                    color: innerBoxIsScrolled
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : Theme.of(context).colorScheme.onSurface,
+                    onPressed: () {
+                      Get.to(const FavoritesView());
+                    },
+                    tooltip: 'Refresh Data',
+                  ),
+                  const SizedBox(
+                    width: 4.0,
+                  ),
                 ],
-                backgroundColor: Theme.of(context).colorScheme.surface,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 elevation: 0,
-                iconTheme: const IconThemeData(color: Colors.black),
+                iconTheme: IconThemeData(
+                    color: Theme.of(context).colorScheme.onPrimary),
                 floating: true,
                 snap: true,
                 pinned: true,
-                expandedHeight: 120.0,
+                expandedHeight: 184.0,
                 collapsedHeight: 60.0,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
@@ -103,16 +78,52 @@ class BerandaView extends StatefulWidget {
                         padding: const EdgeInsets.only(
                           left: 16.0,
                           right: 16.0,
-                          top: 52.0, // Account for AppBar height
-                          bottom: 16.0,
+                          top: 60.0,
                         ),
-                        child: BaseForm(
-                          textEditingController: controller.searchController,
-                          hintText: 'Cari Restoran',
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Theme.of(context).primaryColor,
-                          ),
+                        child: Column(
+                          children: [
+                            BaseForm(
+                              textEditingController:
+                                  controller.searchController,
+                              hintText: 'Cari Restoran',
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: controller.currentFilter == 'all'
+                                      ? BasePrimaryButton(
+                                          onPressed: () =>
+                                              controller.setFilter('all'),
+                                          text: 'Semua',
+                                        )
+                                      : BaseSecondaryButton(
+                                          onPressed: () =>
+                                              controller.setFilter('all'),
+                                          text: 'Semua',
+                                        ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: controller.currentFilter == 'nearest'
+                                      ? BasePrimaryButton(
+                                          onPressed: () =>
+                                              controller.setFilter('nearest'),
+                                          text: 'Terdekat',
+                                        )
+                                      : BaseSecondaryButton(
+                                          onPressed: () =>
+                                              controller.setFilter('nearest'),
+                                          text: 'Terdekat',
+                                        ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),

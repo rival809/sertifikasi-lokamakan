@@ -1,12 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OpenRouteService {
-  // Untuk demo, kita gunakan API key gratis dari OpenRouteService
-  // Dalam production, ini harus disimpan di .env file
-  static const String _apiKey =
-      '5b3ce3597851110001cf6248a0d3fad4987d4c449b0c10aff7ae9f4c';
+  // Get API key from environment variables
+  static String get _apiKey {
+    final apiKey = dotenv.env['OPENROUTESERVICE_API_KEY'];
+    if (apiKey == null || apiKey.isEmpty) {
+      throw Exception(
+        'OPENROUTESERVICE_API_KEY not found in environment variables. '
+        'Please check your .env file.',
+      );
+    }
+    return apiKey;
+  }
+
   static const String _baseUrl = 'https://api.openrouteservice.org/v2';
 
   /// Get route directions between two points

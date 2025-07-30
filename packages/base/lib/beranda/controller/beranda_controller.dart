@@ -179,7 +179,7 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
         // Take only restaurants within 20km (increased from 10km)
         baseList = baseList
             .where((restaurant) =>
-                (restaurant.distance ?? double.infinity) <= 31.0)
+                (restaurant.distance ?? double.infinity) <= 10.0)
             .toList();
 
         log('Filter terdekat: Found ${baseList.length} restaurants within 20km');
