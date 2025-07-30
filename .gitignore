@@ -16,9 +16,12 @@ ujikomsertifikasi.md
 
 # Firebase sensitive files
 android/app/google-services.json
+android/**/google-services.json
 ios/Runner/GoogleService-Info.plist
+ios/**/GoogleService-Info.plist
 .firebase/
 .firebaserc.local
+**/firebase_options.dart
 
 
 
