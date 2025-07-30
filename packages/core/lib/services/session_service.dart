@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:core/services/firestore_service.dart';
+import 'package:core/services/auth_service.dart';
 import 'package:core/models/user_model.dart';
 
 class SessionService {
@@ -119,10 +120,17 @@ class SessionService {
   // Logout dan clear session
   static Future<void> logout() async {
     try {
-      await FirebaseAuth.instance.signOut();
+      await AuthService.completeLogout();
       await _clearSession();
     } catch (e) {
       log('Error during logout: $e');
+      // Fallback ke basic logout
+      try {
+        await AuthService.signOut();
+        await _clearSession();
+      } catch (fallbackError) {
+        log('Fallback logout error: $fallbackError');
+      }
     }
   }
 

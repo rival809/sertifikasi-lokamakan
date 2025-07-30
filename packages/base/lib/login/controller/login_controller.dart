@@ -93,7 +93,8 @@ class LoginController extends State<LoginView> {
     });
 
     try {
-      final result = await AuthService.signInWithGoogle();
+      // Gunakan method yang memaksa pemilihan akun
+      final result = await AuthService.signInWithGoogleForceSelection();
 
       if (result.isSuccess) {
         // Login berhasil

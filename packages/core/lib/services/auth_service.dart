@@ -6,7 +6,10 @@ import 'package:core/services/firestore_service.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
-  static final GoogleSignIn _googleSignIn = GoogleSignIn();
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
+    // Force account selection dengan konfigurasi yang tepat
+    forceCodeForRefreshToken: true,
+  );
 
   // Initialize auth service
   static Future<void> initialize() async {
@@ -118,8 +121,20 @@ class AuthService {
   // Sign in with Google
   static Future<AuthResult> signInWithGoogle({
     Map<String, dynamic>? additionalData,
+    bool forceAccountSelection = true, // Force user to select account
   }) async {
     try {
+      // Sign out from Google first to force account selection
+      if (forceAccountSelection) {
+        try {
+          await _googleSignIn.signOut();
+          log('Google signOut successful for account selection');
+        } catch (signOutError) {
+          // Ignore signOut error pada first-time login
+          log('SignOut failed (normal for first-time login): $signOutError');
+        }
+      }
+
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         return AuthResult.failure('Login Google dibatalkan');
@@ -160,6 +175,95 @@ class AuthService {
       _auth.signOut(),
       _googleSignIn.signOut(),
     ]);
+  }
+
+  // Complete logout dengan disconnect Google account
+  static Future<void> completeLogout() async {
+    try {
+      await Future.wait([
+        _auth.signOut(),
+        _googleSignIn.disconnect(), // Disconnect untuk force account selection
+      ]);
+      log('Complete logout with disconnect successful');
+    } catch (e) {
+      log('Error during complete logout with disconnect: $e');
+      // Fallback ke signOut biasa jika disconnect gagal
+      try {
+        await Future.wait([
+          _auth.signOut(),
+          _googleSignIn.signOut(),
+        ]);
+        log('Fallback logout with signOut successful');
+      } catch (fallbackError) {
+        log('Both logout methods failed: $fallbackError');
+        // Still try individual signouts
+        try {
+          await _auth.signOut();
+        } catch (authError) {
+          log('Firebase Auth signOut failed: $authError');
+        }
+      }
+    }
+  }
+
+  // Disconnect Google account untuk force account selection di login berikutnya
+  static Future<void> disconnectGoogle() async {
+    try {
+      await _googleSignIn.disconnect();
+      log('Google account disconnected successfully');
+    } catch (e) {
+      log('Error disconnecting Google account (might be first-time): $e');
+      // Fallback ke signOut yang lebih aman untuk first-time users
+      try {
+        await _googleSignIn.signOut();
+        log('Fallback signOut successful');
+      } catch (signOutError) {
+        log('Both disconnect and signOut failed: $signOutError');
+        // This is normal for first-time users, don't throw error
+      }
+    }
+  }
+
+  // Force Google account selection (alternative method)
+  static Future<AuthResult> signInWithGoogleForceSelection({
+    Map<String, dynamic>? additionalData,
+  }) async {
+    try {
+      // Safely disconnect untuk memaksa pemilihan akun
+      await safeGoogleDisconnect();
+
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        return AuthResult.failure('Login Google dibatalkan');
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        // Simpan/update data user ke Firestore
+        try {
+          await FirestoreService.createOrUpdateUser(
+            userCredential.user!,
+            additionalData: additionalData,
+          );
+        } catch (firestoreError) {
+          log('Warning: Failed to save Google user data to Firestore: $firestoreError');
+          // Continue dengan auth success meskipun Firestore gagal
+        }
+      }
+
+      return AuthResult.success(userCredential.user);
+    } catch (e) {
+      return AuthResult.failure('Gagal login dengan Google: ${e.toString()}');
+    }
   }
 
   // Send password reset email
@@ -225,6 +329,38 @@ class AuthService {
 
   // Get user photo URL
   static String? get userPhotoURL => _auth.currentUser?.photoURL;
+
+  // Check if Google Sign-In has been used before
+  static Future<bool> isGoogleSignedIn() async {
+    try {
+      final GoogleSignInAccount? account = await _googleSignIn.signInSilently();
+      return account != null;
+    } catch (e) {
+      log('Error checking Google sign-in status: $e');
+      return false;
+    }
+  }
+
+  // Safe Google disconnect with status check
+  static Future<void> safeGoogleDisconnect() async {
+    try {
+      final bool wasSignedIn = await isGoogleSignedIn();
+      if (wasSignedIn) {
+        await _googleSignIn.disconnect();
+        log('Google account disconnected successfully');
+      } else {
+        log('No Google account to disconnect (first-time user)');
+      }
+    } catch (e) {
+      log('Error in safe Google disconnect: $e');
+      // Fallback to signOut
+      try {
+        await _googleSignIn.signOut();
+      } catch (signOutError) {
+        log('Fallback signOut also failed: $signOutError');
+      }
+    }
+  }
 
   // Convert Firebase error codes to user-friendly messages
   static String _getErrorMessage(String errorCode) {
