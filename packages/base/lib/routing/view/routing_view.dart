@@ -2,6 +2,7 @@ import 'package:base/routing/controller/routing_controller.dart';
 import 'package:core/core.dart'
     hide OpenRouteService, RouteInstruction, RouteSummary;
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class RoutingView extends StatefulWidget {
   final RestaurantLocation restaurant;
@@ -90,115 +91,140 @@ class RoutingView extends StatefulWidget {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Route summary card
-          _buildRouteSummaryCard(context, controller),
+          // Map area - mengisi seluruh layar
+          controller.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _buildMap(context, controller),
 
-          // Map area
-          Expanded(
-            child: controller.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _buildMap(context, controller),
+          // Route summary card - mengambang di atas
+          Positioned(
+            top: 16,
+            left: 16,
+            right: 16,
+            child: SafeArea(
+              child: _buildRouteSummaryCard(context, controller),
+            ),
+          ),
+
+          // Bottom bar - mengambang di bawah
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: _buildBottomBar(context, controller),
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomBar(context, controller),
     );
   }
 
   Widget _buildRouteSummaryCard(
       BuildContext context, RoutingController controller) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Destination info
-          Row(
-            children: [
-              Icon(
-                Icons.restaurant,
-                color: Theme.of(context).colorScheme.primary,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  restaurant.name,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${restaurant.address}, ${restaurant.city}',
-            style: TextStyle(
-              fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
             ),
           ),
-          const SizedBox(height: 12),
-
-          // Route summary
-          if (controller.routeSummary != null) ...[
-            Row(
-              children: [
-                _buildSummaryItem(
-                  context,
-                  icon: Icons.straighten,
-                  label: 'Jarak',
-                  value: controller.routeSummary!.distanceText,
-                ),
-                const SizedBox(width: 16),
-                _buildSummaryItem(
-                  context,
-                  icon: Icons.schedule,
-                  label: 'Waktu',
-                  value: controller.routeSummary!.durationText,
-                ),
-                const SizedBox(width: 16),
-                _buildSummaryItem(
-                  context,
-                  icon: _getTransportIcon(controller.currentTransportMode),
-                  label: 'Mode',
-                  value: _getTransportLabel(controller.currentTransportMode),
-                ),
-              ],
-            ),
-          ] else if (controller.hasError) ...[
-            Row(
-              children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Theme.of(context).colorScheme.error,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Gagal memuat rute',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.error,
-                    fontSize: 14,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Destination info
+              Row(
+                children: [
+                  Icon(
+                    Icons.restaurant,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
                   ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      restaurant.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${restaurant.address}, ${restaurant.city}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Route summary
+              if (controller.routeSummary != null) ...[
+                Row(
+                  children: [
+                    _buildSummaryItem(
+                      context,
+                      icon: Icons.straighten,
+                      label: 'Jarak',
+                      value: controller.routeSummary!.distanceText,
+                    ),
+                    const SizedBox(width: 16),
+                    _buildSummaryItem(
+                      context,
+                      icon: Icons.schedule,
+                      label: 'Waktu',
+                      value: controller.routeSummary!.durationText,
+                    ),
+                    const SizedBox(width: 16),
+                    _buildSummaryItem(
+                      context,
+                      icon: _getTransportIcon(controller.currentTransportMode),
+                      label: 'Mode',
+                      value:
+                          _getTransportLabel(controller.currentTransportMode),
+                    ),
+                  ],
+                ),
+              ] else if (controller.hasError) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Theme.of(context).colorScheme.error,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Gagal memuat rute',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -241,141 +267,145 @@ class RoutingView extends StatefulWidget {
   }
 
   Widget _buildMap(BuildContext context, RoutingController controller) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline,
-        ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: FlutterMap(
-          mapController: controller.mapController,
-          options: MapOptions(
-            initialCenter: LatLng(
-              userLocation.latitude,
-              userLocation.longitude,
-            ),
-            initialZoom: 13.0,
-            maxZoom: 18.0,
-            minZoom: 5.0,
-            onMapReady: controller.onMapReady,
+    return ClipRRect(
+      borderRadius: BorderRadius.zero,
+      child: FlutterMap(
+        mapController: controller.mapController,
+        options: MapOptions(
+          initialCenter: LatLng(
+            userLocation.latitude,
+            userLocation.longitude,
           ),
-          children: [
-            // Map tiles
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.example.lokamakan',
-              maxZoom: 19,
-            ),
+          initialZoom: 13.0,
+          maxZoom: 18.0,
+          minZoom: 5.0,
+          onMapReady: controller.onMapReady,
+        ),
+        children: [
+          // Map tiles
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.lokamakan',
+            maxZoom: 19,
+          ),
 
-            // Route polyline
-            if (controller.routeCoordinates.isNotEmpty)
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: controller.routeCoordinates,
-                    strokeWidth: 4.0,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ],
-              ),
-
-            // Markers
-            MarkerLayer(
-              markers: [
-                // Start marker (user location)
-                Marker(
-                  point: LatLng(userLocation.latitude, userLocation.longitude),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.surface,
-                        width: 3,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.my_location,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      size: 20,
-                    ),
-                  ),
-                ),
-
-                // Destination marker (restaurant)
-                Marker(
-                  point: LatLng(
-                    restaurant.location.latitude,
-                    restaurant.location.longitude,
-                  ),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.error,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.surface,
-                        width: 3,
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.restaurant,
-                      color: Theme.of(context).colorScheme.onError,
-                      size: 20,
-                    ),
-                  ),
+          // Route polyline
+          if (controller.routeCoordinates.isNotEmpty)
+            PolylineLayer(
+              polylines: [
+                Polyline(
+                  points: controller.routeCoordinates,
+                  strokeWidth: 4.0,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ],
             ),
-          ],
-        ),
+
+          // Markers
+          MarkerLayer(
+            markers: [
+              // Start marker (user location)
+              Marker(
+                point: LatLng(userLocation.latitude, userLocation.longitude),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.surface,
+                      width: 3,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.my_location,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    size: 20,
+                  ),
+                ),
+              ),
+
+              // Destination marker (restaurant)
+              Marker(
+                point: LatLng(
+                  restaurant.location.latitude,
+                  restaurant.location.longitude,
+                ),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.error,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.surface,
+                      width: 3,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.restaurant,
+                    color: Theme.of(context).colorScheme.onError,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildBottomBar(BuildContext context, RoutingController controller) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -4),
+              ),
+            ],
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            ),
           ),
-        ),
-      ),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            // Show instructions button
-            Expanded(
-              child: BaseSecondaryButton(
-                onPressed: () => _showInstructions(context, controller),
-                prefixIcon: const Icon(Icons.list),
-                text: 'Lihat Instruksi',
-              ),
-            ),
-            const SizedBox(width: 16),
+          child: SafeArea(
+            child: IntrinsicHeight(
+              child: Row(
+                children: [
+                  // Show instructions button
+                  Expanded(
+                    child: BaseSecondaryButton(
+                      onPressed: () => _showInstructions(context, controller),
+                      prefixIcon: const Icon(Icons.list),
+                      text: 'Lihat Instruksi',
+                    ),
+                  ),
+                  const SizedBox(width: 16),
 
-            // Start navigation button
-            Expanded(
-              child: BasePrimaryButton(
-                onPressed: controller.routeCoordinates.isNotEmpty
-                    ? () => controller.openInGoogleMaps()
-                    : null,
-                prefixIcon: const Icon(Icons.navigation),
-                text: 'Mulai Navigasi',
+                  // Start navigation button
+                  Expanded(
+                    child: BasePrimaryButton(
+                      onPressed: controller.routeCoordinates.isNotEmpty
+                          ? () => controller.openInGoogleMaps()
+                          : null,
+                      prefixIcon: const Icon(Icons.navigation),
+                      text: 'Mulai Navigasi',
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

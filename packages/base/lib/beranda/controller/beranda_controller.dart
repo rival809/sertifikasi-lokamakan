@@ -17,6 +17,7 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   // User location for distance calculation
   Position? userLocation;
   bool isLocationEnabled = false;
+  bool isRetryingLocation = false;
 
   // Filter states
   String selectedFilter = 'all'; // 'all', 'nearest'
@@ -107,9 +108,153 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
         if (restaurants.isNotEmpty) {
           _updateDistances();
         }
+      } else {
+        // Handle permission denied
+        _handleLocationPermissionDenied();
       }
     } catch (e) {
       log('Error getting user location: $e');
+      _handleLocationError(e.toString());
+    }
+  }
+
+  // Handle when location permission is denied
+  void _handleLocationPermissionDenied() {
+    userLocation = null;
+    isLocationEnabled = false;
+
+    // If user is trying to use nearest filter, switch back to all
+    if (selectedFilter == 'nearest') {
+      selectedFilter = 'all';
+      _applyFilter();
+    }
+
+    update();
+
+    // Show informative snackbar
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.location_off, color: Colors.white),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Izin lokasi diperlukan untuk fitur "Terdekat". Anda masih bisa mencari restoran secara manual.',
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'Pengaturan',
+            textColor: Colors.white,
+            onPressed: () {
+              _showLocationPermissionDialog();
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  // Handle location errors
+  void _handleLocationError(String error) {
+    userLocation = null;
+    isLocationEnabled = false;
+
+    // If user is trying to use nearest filter, switch back to all
+    if (selectedFilter == 'nearest') {
+      selectedFilter = 'all';
+      _applyFilter();
+    }
+
+    update();
+
+    // Show error message
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text('Gagal mendapatkan lokasi: $error'),
+              ),
+            ],
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  // Show dialog to explain location permission
+  void _showLocationPermissionDialog() {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.location_on),
+              SizedBox(width: 8),
+              Text('Izin Lokasi'),
+            ],
+          ),
+          content: const Text(
+            'Untuk menggunakan fitur "Restoran Terdekat", aplikasi memerlukan akses lokasi Anda.\n\n'
+            'Anda dapat:\n'
+            '• Memberikan izin lokasi di pengaturan aplikasi\n'
+            '• Atau tetap menggunakan pencarian manual\n\n'
+            'Lokasi Anda hanya digunakan untuk menghitung jarak ke restoran dan tidak disimpan.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Nanti Saja'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _requestLocationPermission();
+              },
+              child: const Text('Coba Lagi'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Request location permission again
+  Future<void> _requestLocationPermission() async {
+    try {
+      // Try to get location again - this might prompt user for permission
+      await _getUserLocation();
+    } catch (e) {
+      log('Error requesting location permission: $e');
+    }
+  }
+
+  // Public method to retry getting location (can be called from UI)
+  Future<void> retryGetLocation() async {
+    // Set retry state to show loading indicator
+    isRetryingLocation = true;
+    update();
+
+    try {
+      await _getUserLocation();
+    } finally {
+      // Always reset retry state
+      isRetryingLocation = false;
+      update();
     }
   }
 
@@ -203,9 +348,53 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
     log('Location enabled: $isLocationEnabled');
     log('Total restaurants: ${restaurants.length}');
 
+    // Check if user is trying to use nearest filter without location permission
+    if (filter == 'nearest' && userLocation == null) {
+      // Show dialog to explain need for location permission
+      _showLocationRequiredDialog();
+      return; // Don't change the filter
+    }
+
     selectedFilter = filter;
     update();
     _applyFilter();
+  }
+
+  // Show dialog when user tries to use nearest filter without location
+  void _showLocationRequiredDialog() {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.location_on, color: Colors.orange),
+              SizedBox(width: 8),
+              Text('Lokasi Diperlukan'),
+            ],
+          ),
+          content: const Text(
+            'Untuk melihat restoran terdekat, aplikasi memerlukan akses lokasi Anda.\n\n'
+            'Berikan izin lokasi untuk menggunakan fitur ini?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _requestLocationPermission();
+              },
+              child: const Text('Berikan Izin'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Debug method to check status
@@ -369,6 +558,43 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
 
   // Getter for current filter
   String get currentFilter => selectedFilter;
+
+  // Check if location permission is needed for current operation
+  bool get needsLocationPermission =>
+      selectedFilter == 'nearest' && userLocation == null;
+
+  // Get location status message for UI
+  String get locationStatusMessage {
+    if (!isLocationEnabled) {
+      return 'Lokasi tidak tersedia - Berikan izin untuk fitur terdekat';
+    } else if (userLocation == null) {
+      return 'Mendapatkan lokasi...';
+    } else {
+      return 'Lokasi aktif';
+    }
+  }
+
+  // Get location status icon for UI
+  IconData get locationStatusIcon {
+    if (!isLocationEnabled) {
+      return Icons.location_off;
+    } else if (userLocation == null) {
+      return Icons.location_searching;
+    } else {
+      return Icons.location_on;
+    }
+  }
+
+  // Get location status color for UI
+  Color locationStatusColor(BuildContext context) {
+    if (!isLocationEnabled) {
+      return Colors.red;
+    } else if (userLocation == null) {
+      return Colors.orange;
+    } else {
+      return Theme.of(context).colorScheme.primary;
+    }
+  }
 
   // Debug helper method
   Map<String, dynamic> getDebugInfo() {

@@ -10,6 +10,12 @@ class BaseAppDrawer extends StatefulWidget {
   final List<DrawerMenuModel> menuItems;
   final Color? headerColor;
 
+  // Location info
+  final Position? userLocation;
+  final bool isLocationEnabled;
+  final bool isRetryingLocation;
+  final VoidCallback? onLocationTap;
+
   // Callback functions for dynamic menu building
   final VoidCallback? onRestaurantListTap;
   final VoidCallback? onFavoriteTap;
@@ -22,6 +28,10 @@ class BaseAppDrawer extends StatefulWidget {
     this.userAvatar,
     required this.menuItems,
     this.headerColor,
+    this.userLocation,
+    this.isLocationEnabled = false,
+    this.isRetryingLocation = false,
+    this.onLocationTap,
     this.onRestaurantListTap,
     this.onFavoriteTap,
     this.onAdminRestaurantTap,
@@ -33,6 +43,10 @@ class BaseAppDrawer extends StatefulWidget {
     String? userEmail,
     Widget? userAvatar,
     Color? headerColor,
+    Position? userLocation,
+    bool isLocationEnabled = false,
+    bool isRetryingLocation = false,
+    VoidCallback? onLocationTap,
     VoidCallback? onAdminRestaurantTap,
   }) {
     return BaseAppDrawer(
@@ -40,6 +54,10 @@ class BaseAppDrawer extends StatefulWidget {
       userEmail: userEmail,
       userAvatar: userAvatar,
       headerColor: headerColor,
+      userLocation: userLocation,
+      isLocationEnabled: isLocationEnabled,
+      isRetryingLocation: isRetryingLocation,
+      onLocationTap: onLocationTap,
       menuItems: const [], // Will be built dynamically using ValueListenableBuilder
       onAdminRestaurantTap: onAdminRestaurantTap,
     );
@@ -194,9 +212,153 @@ class _BaseAppDrawerState extends State<BaseAppDrawer> {
                 ),
             ],
           ),
+          const SizedBox(height: 12),
+          _buildLocationInfo(context),
         ],
       ),
     );
+  }
+
+  Widget _buildLocationInfo(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+            child: Icon(
+              _getLocationIcon(),
+              color: _getLocationColor(context),
+              size: 12,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Lokasi Saat Ini',
+                  style: TextStyle(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onPrimary
+                        .withOpacity(0.8),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _getLocationText(),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          if (widget.onLocationTap != null)
+            Tooltip(
+              message: widget.isRetryingLocation
+                  ? 'Mencoba mendapatkan lokasi...'
+                  : widget.isLocationEnabled
+                      ? 'Refresh lokasi'
+                      : 'Pengaturan lokasi',
+              child: InkWell(
+                onTap: widget.isRetryingLocation ? null : widget.onLocationTap,
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  child: widget.isRetryingLocation
+                      ? SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          ),
+                        )
+                      : Icon(
+                          widget.isLocationEnabled
+                              ? Icons.refresh
+                              : Icons.settings,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 18,
+                        ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getLocationIcon() {
+    if (!widget.isLocationEnabled) {
+      return Icons.location_off;
+    } else if (widget.userLocation == null) {
+      return Icons.location_searching;
+    } else {
+      return Icons.location_on;
+    }
+  }
+
+  Color _getLocationColor(BuildContext context) {
+    if (!widget.isLocationEnabled) {
+      return Colors.red.shade300;
+    } else if (widget.userLocation == null) {
+      return Colors.orange.shade300;
+    } else {
+      return Colors.green.shade300;
+    }
+  }
+
+  String _getLocationText() {
+    if (widget.isRetryingLocation) {
+      return 'Mencoba mendapatkan lokasi...\nMohon tunggu';
+    } else if (!widget.isLocationEnabled) {
+      return 'Lokasi dinonaktifkan\nTap untuk mengaktifkan';
+    } else if (widget.userLocation == null) {
+      return 'Mencari lokasi...\nTap untuk coba lagi';
+    } else {
+      final lat = widget.userLocation!.latitude.toStringAsFixed(4);
+      final lng = widget.userLocation!.longitude.toStringAsFixed(4);
+      final accuracy = widget.userLocation!.accuracy.toStringAsFixed(0);
+
+      // Format timestamp
+      String timeInfo = '';
+      final now = DateTime.now();
+      final diff = now.difference(widget.userLocation!.timestamp);
+      if (diff.inMinutes < 1) {
+        timeInfo = ' • Baru saja';
+      } else if (diff.inMinutes < 60) {
+        timeInfo = ' • ${diff.inMinutes}m lalu';
+      } else if (diff.inHours < 24) {
+        timeInfo = ' • ${diff.inHours}h lalu';
+      }
+
+      return 'Lokasi ditemukan$timeInfo\n$lat, $lng (±${accuracy}m)';
+    }
   }
 
   Widget _buildMenuItem(BuildContext context, DrawerMenuModel item) {

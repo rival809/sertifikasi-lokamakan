@@ -20,17 +20,17 @@ class FavoritesView extends StatefulWidget {
         iconTheme: IconThemeData(
           color: Theme.of(context)
               .colorScheme
-              .onSurface, // Ganti dengan warna yang kamu inginkan
+              .onPrimary, // Ganti dengan warna yang kamu inginkan
         ),
         title: Text(
           'Restoran Favorit',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 20,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
         actions: [
           if (controller.favorites.isNotEmpty)
@@ -38,7 +38,7 @@ class FavoritesView extends StatefulWidget {
               onPressed: controller.clearAllFavorites,
               icon: Icon(
                 Icons.clear_all,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
               tooltip: 'Hapus Semua',
             ),

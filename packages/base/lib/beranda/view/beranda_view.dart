@@ -11,6 +11,12 @@ class BerandaView extends StatefulWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       drawer: BaseAppDrawer.beranda(
+        userLocation: controller.userLocation,
+        isLocationEnabled: controller.isLocationEnabled,
+        isRetryingLocation: controller.isRetryingLocation,
+        onLocationTap: () {
+          controller.retryGetLocation();
+        },
         onAdminRestaurantTap: () {
           newRouter.push(RouterUtils.adminRestaurant);
         },
