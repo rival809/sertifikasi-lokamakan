@@ -80,7 +80,7 @@ class RestaurantDetailView extends StatefulWidget {
 
                   // Location and distance info
                   _buildLocationInfo(context, controller),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // Description
                   if (restaurant.description?.isNotEmpty == true) ...[
@@ -94,16 +94,16 @@ class RestaurantDetailView extends StatefulWidget {
                         height: 1.5,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                   ],
 
                   // Location Based Service Actions
                   _buildLBSActions(context, controller),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // Quick Info Cards
                   _buildQuickInfoCards(context, controller),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // Restaurant Menu Section
                   if (controller.restaurantMenu != null) ...[
@@ -115,22 +115,26 @@ class RestaurantDetailView extends StatefulWidget {
                         _showMenuItemDetail(context, item);
                       },
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                   ] else if (controller.isMenuLoading) ...[
                     _buildSectionTitle(context, 'Menu'),
                     const SizedBox(height: 16),
                     const Center(child: CircularProgressIndicator()),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                   ] else ...[
                     _buildSectionTitle(context, 'Menu'),
                     const SizedBox(height: 16),
                     _buildNoMenuAvailable(context),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                   ],
 
                   // Map integration (jika user location available)
                   if (controller.userLocation != null)
                     _buildMapSection(context, controller),
+                  const SizedBox(height: 16),
+
+                  // Restaurant Reviews Section
+                  _buildReviewsSection(context, controller),
                 ],
               ),
             ),
@@ -152,15 +156,18 @@ class RestaurantDetailView extends StatefulWidget {
         fit: BoxFit.cover,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      (loadingProgress.expectedTotalBytes ?? 1)
-                  : null,
-              strokeWidth: 2,
-              color: Theme.of(context).colorScheme.primary,
+          return Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        (loadingProgress.expectedTotalBytes ?? 1)
+                    : null,
+                strokeWidth: 2,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           );
         },
@@ -894,7 +901,7 @@ class RestaurantDetailView extends StatefulWidget {
   Widget _buildNoMenuAvailable(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
@@ -919,12 +926,43 @@ class RestaurantDetailView extends StatefulWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Restoran ini belum menambahkan menu. Silakan hubungi restoran langsung untuk informasi menu dan harga.',
+            'Restoran ini belum menambahkan menu.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontSize: 14,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewsSection(
+      BuildContext context, RestaurantDetailController controller) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+        ),
+      ),
+      child: Column(
+        children: [
+          // Reviews list
+          ReviewWidgets.buildReviewsList(
+            restaurantId: restaurant.id,
+            reviews: controller.reviews,
+            isLoading: controller.isReviewsLoading,
+          ),
+
+          // Add review form
+          ReviewWidgets.buildAddReviewForm(
+            context: context,
+            currentUser: controller.currentUser,
+            restaurantId: restaurant.id,
+            onReviewAdded: controller.onReviewAdded,
           ),
         ],
       ),

@@ -37,6 +37,7 @@ export 'models/user_model.dart';
 export 'models/theme_adapter.dart';
 export 'models/restaurant_location_model.dart';
 export 'models/restaurant_menu_model.dart';
+export 'models/restaurant_review_model.dart';
 
 //Utils
 export 'enum/dialog_type.dart';
@@ -52,6 +53,7 @@ export 'services/location_service.dart';
 export 'services/restaurant_service.dart';
 export 'services/openroute_service.dart';
 export 'services/menu_service.dart';
+export 'services/review_service.dart';
 
 //Database
 export 'database/theme_database.dart';
@@ -123,4 +125,5 @@ export 'widgets/restaurant_image/restaurant_image_widget.dart';
 export 'widgets/restaurant_card/base_restaurant_card.dart';
 export 'widgets/drawer/base_app_drawer.dart';
 export 'widgets/drawer/drawer_menu_model.dart';
+export 'widgets/review_widgets.dart';
 export 'state_util.dart';

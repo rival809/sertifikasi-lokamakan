@@ -13,12 +13,16 @@ class MenuItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
+        color: Theme.of(context).colorScheme.surface,
+        border: Border.all(
+          width: 1.0,
+          color: Theme.of(context).colorScheme.outline,
+        ),
       ),
+      margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -34,6 +38,11 @@ class MenuItemCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: Theme.of(context).colorScheme.surfaceVariant,
+                  border: Border.all(
+                    width: 1.0,
+                    color:
+                        Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  ),
                 ),
                 child: item.imageUrl != null
                     ? ClipRRect(
@@ -255,8 +264,8 @@ class MenuCategoryChips extends StatelessWidget {
 
           return Container(
             margin: EdgeInsets.only(
-              left: index == 0 ? 16 : 8,
-              right: index == categories.length - 1 ? 16 : 0,
+              left: index == 0 ? 0 : 8,
+              // right: index == categories.length - 1 ? 16 : 0,
             ),
             child: FilterChip(
               label: Text(category.name),
@@ -319,7 +328,7 @@ class RestaurantMenuSection extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onSurface,
               ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
 
         // Category chips
         MenuCategoryChips(

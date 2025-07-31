@@ -15,6 +15,12 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
   bool isMenuLoading = false;
   String? selectedCategoryId;
 
+  // Review related properties
+  List<RestaurantReview> reviews = [];
+  bool isReviewsLoading = false;
+  RestaurantReviewSummary? reviewSummary;
+  UserModel? currentUser;
+
   @override
   void initState() {
     super.initState();
@@ -24,9 +30,12 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
 
   Future<void> _initializeData() async {
     isLoading = true;
-    update();
+    if (mounted) update();
 
     try {
+      // Get current user
+      await _getCurrentUser();
+
       // Check if restaurant is in favorites
       isFavorite = await FavoriteService.isFavorite(restaurant.id);
 
@@ -35,11 +44,25 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
 
       // Load restaurant menu
       await _loadRestaurantMenu();
+
+      // Load restaurant reviews
+      await _loadRestaurantReviews();
     } catch (e) {
       debugPrint('Error initializing restaurant detail: $e');
     } finally {
       isLoading = false;
-      update();
+      if (mounted) update();
+    }
+  }
+
+  Future<void> _getCurrentUser() async {
+    try {
+      final firebaseUser = AuthService.currentUser;
+      if (firebaseUser != null) {
+        currentUser = UserModel.fromFirebaseUser(firebaseUser);
+      }
+    } catch (e) {
+      debugPrint('Error getting current user: $e');
     }
   }
 
@@ -57,7 +80,7 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
           restaurant.location.longitude,
         );
 
-        update();
+        if (mounted) update();
       }
     } catch (e) {
       debugPrint('Error getting location: $e');
@@ -67,7 +90,7 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
   Future<void> _loadRestaurantMenu() async {
     try {
       isMenuLoading = true;
-      update();
+      if (mounted) update();
 
       // Try to load existing menu from Firestore
       restaurantMenu = await MenuService.getRestaurantMenu(restaurant.id);
@@ -81,13 +104,43 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
       debugPrint('Error loading restaurant menu: $e');
     } finally {
       isMenuLoading = false;
-      update();
+      if (mounted) update();
+    }
+  }
+
+  Future<void> _loadRestaurantReviews() async {
+    try {
+      debugPrint('Loading reviews for restaurant: ${restaurant.id}');
+      isReviewsLoading = true;
+      if (mounted) update();
+
+      // Load reviews and summary
+      final reviewsData =
+          await ReviewService.getRestaurantReviews(restaurant.id);
+      final summaryData =
+          await ReviewService.getRestaurantReviewSummary(restaurant.id);
+
+      debugPrint('Loaded ${reviewsData.length} reviews');
+      reviews = reviewsData;
+      reviewSummary = summaryData;
+    } catch (e) {
+      debugPrint('Error loading restaurant reviews: $e');
+    } finally {
+      isReviewsLoading = false;
+      if (mounted) update();
+    }
+  }
+
+  Future<void> onReviewAdded() async {
+    // Reload reviews when a new review is added
+    if (mounted) {
+      await _loadRestaurantReviews();
     }
   }
 
   void selectMenuCategory(String categoryId) {
     selectedCategoryId = categoryId;
-    update();
+    if (mounted) update();
   }
 
   List<MenuItem> get selectedCategoryItems {
@@ -104,7 +157,7 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
       }
 
       isFavorite = !isFavorite;
-      update();
+      if (mounted) update();
 
       // Notify about favorite change
       FavoriteEventManager.notifyFavoriteChanged();
