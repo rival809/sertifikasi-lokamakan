@@ -14,6 +14,7 @@ class BaseAppDrawer extends StatefulWidget {
   final Position? userLocation;
   final bool isLocationEnabled;
   final bool isRetryingLocation;
+  final String? userLocationAddress;
   final VoidCallback? onLocationTap;
 
   // Callback functions for dynamic menu building
@@ -31,6 +32,7 @@ class BaseAppDrawer extends StatefulWidget {
     this.userLocation,
     this.isLocationEnabled = false,
     this.isRetryingLocation = false,
+    this.userLocationAddress,
     this.onLocationTap,
     this.onRestaurantListTap,
     this.onFavoriteTap,
@@ -46,6 +48,7 @@ class BaseAppDrawer extends StatefulWidget {
     Position? userLocation,
     bool isLocationEnabled = false,
     bool isRetryingLocation = false,
+    String? userLocationAddress,
     VoidCallback? onLocationTap,
     VoidCallback? onAdminRestaurantTap,
   }) {
@@ -57,6 +60,7 @@ class BaseAppDrawer extends StatefulWidget {
       userLocation: userLocation,
       isLocationEnabled: isLocationEnabled,
       isRetryingLocation: isRetryingLocation,
+      userLocationAddress: userLocationAddress,
       onLocationTap: onLocationTap,
       menuItems: const [], // Will be built dynamically using ValueListenableBuilder
       onAdminRestaurantTap: onAdminRestaurantTap,
@@ -266,10 +270,10 @@ class _BaseAppDrawerState extends State<BaseAppDrawer> {
                   _getLocationText(),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -341,10 +345,6 @@ class _BaseAppDrawerState extends State<BaseAppDrawer> {
     } else if (widget.userLocation == null) {
       return 'Mencari lokasi...\nTap untuk coba lagi';
     } else {
-      final lat = widget.userLocation!.latitude.toStringAsFixed(4);
-      final lng = widget.userLocation!.longitude.toStringAsFixed(4);
-      final accuracy = widget.userLocation!.accuracy.toStringAsFixed(0);
-
       // Format timestamp
       String timeInfo = '';
       final now = DateTime.now();
@@ -357,7 +357,18 @@ class _BaseAppDrawerState extends State<BaseAppDrawer> {
         timeInfo = ' • ${diff.inHours}h lalu';
       }
 
-      return 'Lokasi ditemukan$timeInfo\n$lat, $lng (±${accuracy}m)';
+      // Format coordinates
+      final lat = widget.userLocation!.latitude.toStringAsFixed(4);
+      final lng = widget.userLocation!.longitude.toStringAsFixed(4);
+      final accuracy = widget.userLocation!.accuracy.toStringAsFixed(0);
+
+      // Show address with coordinates if available, otherwise just coordinates
+      if (widget.userLocationAddress != null &&
+          widget.userLocationAddress!.isNotEmpty) {
+        return 'Lokasi ditemukan$timeInfo\n${widget.userLocationAddress!}\n$lat, $lng (±${accuracy}m)';
+      } else {
+        return 'Lokasi ditemukan$timeInfo\n$lat, $lng (±${accuracy}m)';
+      }
     }
   }
 

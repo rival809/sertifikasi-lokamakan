@@ -14,6 +14,7 @@ class BerandaView extends StatefulWidget {
         userLocation: controller.userLocation,
         isLocationEnabled: controller.isLocationEnabled,
         isRetryingLocation: controller.isRetryingLocation,
+        userLocationAddress: controller.userLocationAddress,
         onLocationTap: () {
           controller.retryGetLocation();
         },

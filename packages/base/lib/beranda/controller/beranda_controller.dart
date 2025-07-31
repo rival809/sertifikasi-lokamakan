@@ -18,6 +18,7 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   Position? userLocation;
   bool isLocationEnabled = false;
   bool isRetryingLocation = false;
+  String? userLocationAddress;
 
   // Filter states
   String selectedFilter = 'all'; // 'all', 'nearest'
@@ -100,13 +101,18 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
       update();
 
       if (hasPermission) {
-        Position? position = await LocationService.getCurrentLocation();
-        userLocation = position;
-        update();
+        // Get location with address
+        final locationData = await LocationService.getCurrentLocationWithAddress();
+        
+        if (locationData != null) {
+          userLocation = locationData['position'] as Position?;
+          userLocationAddress = locationData['address'] as String?;
+          update();
 
-        // Update distances if we have restaurants loaded
-        if (restaurants.isNotEmpty) {
-          _updateDistances();
+          // Update distances if we have restaurants loaded
+          if (restaurants.isNotEmpty) {
+            _updateDistances();
+          }
         }
       } else {
         // Handle permission denied
@@ -121,6 +127,7 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   // Handle when location permission is denied
   void _handleLocationPermissionDenied() {
     userLocation = null;
+    userLocationAddress = null;
     isLocationEnabled = false;
 
     // If user is trying to use nearest filter, switch back to all
@@ -163,6 +170,7 @@ class BerandaController extends State<BerandaView> with WidgetsBindingObserver {
   // Handle location errors
   void _handleLocationError(String error) {
     userLocation = null;
+    userLocationAddress = null;
     isLocationEnabled = false;
 
     // If user is trying to use nearest filter, switch back to all

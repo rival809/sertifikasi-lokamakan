@@ -1,6 +1,7 @@
 import 'dart:developer' as dev;
 import 'dart:math';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:core/models/restaurant_location_model.dart';
 
 class LocationService {
@@ -189,5 +190,124 @@ class LocationService {
   /// Get location accuracy settings
   static Future<LocationAccuracyStatus> getLocationAccuracy() async {
     return await Geolocator.getLocationAccuracy();
+  }
+
+  /// Get address from coordinates (Reverse Geocoding)
+  static Future<String?> getAddressFromCoordinates(
+    double latitude,
+    double longitude,
+  ) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        latitude,
+        longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        
+        // Build address string from placemark components
+        List<String> addressParts = [];
+        
+        // Add street/sublocality
+        if (place.street != null && place.street!.isNotEmpty) {
+          addressParts.add(place.street!);
+        } else if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+          addressParts.add(place.subLocality!);
+        }
+        
+        // Add locality/subadministrativearea
+        if (place.locality != null && place.locality!.isNotEmpty) {
+          addressParts.add(place.locality!);
+        } else if (place.subAdministrativeArea != null && 
+                  place.subAdministrativeArea!.isNotEmpty) {
+          addressParts.add(place.subAdministrativeArea!);
+        }
+        
+        // Add administrative area (state/province)
+        if (place.administrativeArea != null && 
+            place.administrativeArea!.isNotEmpty) {
+          addressParts.add(place.administrativeArea!);
+        }
+        
+        // Add country
+        if (place.country != null && place.country!.isNotEmpty) {
+          addressParts.add(place.country!);
+        }
+        
+        String fullAddress = addressParts.join(', ');
+        dev.log('Geocoded address: $fullAddress');
+        return fullAddress.isNotEmpty ? fullAddress : null;
+      }
+      
+      return null;
+    } catch (e) {
+      dev.log('Error during reverse geocoding: $e');
+      return null;
+    }
+  }
+
+  /// Get simplified address (locality and administrative area only)
+  static Future<String?> getSimplifiedAddress(
+    double latitude,
+    double longitude,
+  ) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        latitude,
+        longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        
+        List<String> addressParts = [];
+        
+        // Add locality
+        if (place.locality != null && place.locality!.isNotEmpty) {
+          addressParts.add(place.locality!);
+        } else if (place.subAdministrativeArea != null && 
+                  place.subAdministrativeArea!.isNotEmpty) {
+          addressParts.add(place.subAdministrativeArea!);
+        }
+        
+        // Add administrative area (state/province)
+        if (place.administrativeArea != null && 
+            place.administrativeArea!.isNotEmpty) {
+          addressParts.add(place.administrativeArea!);
+        }
+        
+        String simplifiedAddress = addressParts.join(', ');
+        dev.log('Simplified address: $simplifiedAddress');
+        return simplifiedAddress.isNotEmpty ? simplifiedAddress : null;
+      }
+      
+      return null;
+    } catch (e) {
+      dev.log('Error during simplified geocoding: $e');
+      return null;
+    }
+  }
+
+  /// Get current location with address
+  static Future<Map<String, dynamic>?> getCurrentLocationWithAddress() async {
+    try {
+      Position? position = await getCurrentLocation();
+      if (position == null) return null;
+
+      String? address = await getSimplifiedAddress(
+        position.latitude,
+        position.longitude,
+      );
+
+      return {
+        'position': position,
+        'address': address,
+        'coordinates': '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}',
+      };
+    } catch (e) {
+      dev.log('Error getting location with address: $e');
+      return null;
+    }
   }
 }
