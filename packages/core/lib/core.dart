@@ -36,6 +36,7 @@ export 'package:flutter_dotenv/flutter_dotenv.dart';
 export 'models/user_model.dart';
 export 'models/theme_adapter.dart';
 export 'models/restaurant_location_model.dart';
+export 'models/restaurant_menu_model.dart';
 
 //Utils
 export 'enum/dialog_type.dart';
@@ -50,6 +51,7 @@ export 'services/favorite_service.dart';
 export 'services/location_service.dart';
 export 'services/restaurant_service.dart';
 export 'services/openroute_service.dart';
+export 'services/menu_service.dart';
 
 //Database
 export 'database/theme_database.dart';

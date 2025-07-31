@@ -10,6 +10,11 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
   bool isFavorite = false;
   bool isLoading = true;
 
+  // Menu related properties
+  RestaurantMenu? restaurantMenu;
+  bool isMenuLoading = false;
+  String? selectedCategoryId;
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +32,9 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
 
       // Get user location and calculate distance
       await _getCurrentLocationAndCalculateDistance();
+
+      // Load restaurant menu
+      await _loadRestaurantMenu();
     } catch (e) {
       debugPrint('Error initializing restaurant detail: $e');
     } finally {
@@ -54,6 +62,37 @@ class RestaurantDetailController extends State<RestaurantDetailView> {
     } catch (e) {
       debugPrint('Error getting location: $e');
     }
+  }
+
+  Future<void> _loadRestaurantMenu() async {
+    try {
+      isMenuLoading = true;
+      update();
+
+      // Try to load existing menu from Firestore
+      restaurantMenu = await MenuService.getRestaurantMenu(restaurant.id);
+
+      // Set default selected category to first available category
+      if (restaurantMenu != null &&
+          restaurantMenu!.activeCategories.isNotEmpty) {
+        selectedCategoryId = restaurantMenu!.activeCategories.first.id;
+      }
+    } catch (e) {
+      debugPrint('Error loading restaurant menu: $e');
+    } finally {
+      isMenuLoading = false;
+      update();
+    }
+  }
+
+  void selectMenuCategory(String categoryId) {
+    selectedCategoryId = categoryId;
+    update();
+  }
+
+  List<MenuItem> get selectedCategoryItems {
+    if (restaurantMenu == null || selectedCategoryId == null) return [];
+    return restaurantMenu!.getItemsByCategory(selectedCategoryId!);
   }
 
   Future<void> toggleFavorite() async {
